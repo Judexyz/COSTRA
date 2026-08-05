@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asset Brand — Himawari Digi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/style.css?v=1" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=1" />
+  <link rel="stylesheet" href="../css/pages.css?v=1" />
+  
+  <style>
+    #modalForm.modal-overlay,
+    #modalDelete.modal-overlay,
+    #modalPreview.modal-overlay {
+      display: flex !important;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #modalForm.modal-overlay.active,
+    #modalDelete.modal-overlay.active,
+    #modalPreview.modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .brand-logo-wrap {
+      width: 60px;
+      height: 60px;
+      min-width: 60px;
+      min-height: 60px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      background: var(--surface-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
+    }
+    .brand-logo-wrap:hover {
+      transform: scale(1.1);
+      box-shadow: var(--shadow-md);
+    }
+    .brand-logo-wrap img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: contain;
+      object-position: center;
+      display: block;
+      max-width: none !important;
+    }
+    .brand-logo-placeholder {
+      width: 60px;
+      height: 60px;
+      min-width: 60px;
+      min-height: 60px;
+      border-radius: 8px;
+      background: var(--gray-100);
+      border: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-400);
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .preview-img {
+      width: 300px;
+      height: 300px;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 20px 25px rgba(0,0,0,0.25);
+      background: var(--surface-card);
+      padding: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <span class="brand-main">Himawari</span>
+        <span class="brand-sub">Digi</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="userName">Loading...</p>
+          <p class="user-role" id="userRole">-</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">Asset Brand</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Brand Asset</h1>
+          <p class="page-subtitle">Kelola master data merek / brand asset</p>
+        </div>
+        <button class="btn btn-primary" id="btnAdd">
+          <i class="fa-solid fa-plus"></i> Tambah Brand
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Cari nama brand..." />
+        </div>
+        <button class="btn btn-outline" id="btnRefresh">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="data-table" id="brandTable">
+            <thead>
+              <tr>
+                <th style="width:50px">#</th>
+                <th style="width:80px">Logo</th>
+                <th>Nama Brand</th>
+                <th style="width:120px">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="brandTableBody">
+              <tr><td colspan="4" class="table-empty">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-info" id="tableInfo">-</div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modalForm">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalFormTitle">Tambah Brand</h3>
+        <button class="modal-close" id="btnCloseForm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="brandForm" enctype="multipart/form-data">
+          <input type="hidden" id="brandId" />
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">Nama Brand <span class="required">*</span></label>
+              <input type="text" class="form-input" id="brandName" placeholder="Contoh: Dell, Lenovo, Apple" />
+              <span class="form-error" id="nameError"></span>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Logo Brand</label>
+              <input type="file" class="form-input" id="brandLogo" accept="image/*" />
+              <span class="form-hint">Format: JPG, PNG, WebP. Maks 2MB</span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelForm">Batal</button>
+        <button class="btn btn-primary" id="btnSaveForm">
+          <span id="saveBtnText">Simpan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalDelete">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Hapus Brand</h3>
+        <button class="modal-close" id="btnCloseDelete"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <p class="confirm-text">Yakin ingin menghapus brand <strong id="deleteBrandName"></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelDelete">Batal</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalPreview" onclick="AssetBrandPage.closePreview()">
+    <div class="modal modal-md" style="background: transparent; box-shadow: none;" onclick="event.stopPropagation()">
+      <div style="text-align: right; margin-bottom: 0.5rem;">
+        <button class="modal-close" onclick="AssetBrandPage.closePreview()" style="color: white; background: rgba(0,0,0,0.5);">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <img id="previewImage" class="preview-img" src="" alt="Preview Brand" />
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+  </script>
+
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+  <script src="../js/modules/asset-brand/asset-brand.js?v=1"></script>
+
+</body>
+</html>

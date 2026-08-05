@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Himawari Digi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/style.css?v=1" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=1" />
+  
+  <style>
+    /* Stats Cards Styles */
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-300);
+    }
+    
+    .stat-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: var(--primary-500); }
+    .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .stat-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    .stat-icon.purple { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+    .stat-icon.teal { background: rgba(20, 184, 166, 0.1); color: #14b8a6; }
+
+    .stat-info { flex: 1; }
+    .stat-title { font-size: 0.875rem; color: var(--gray-500); font-weight: 500; margin-bottom: 0.25rem; }
+    .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--gray-900); line-height: 1.1; }
+
+    /* Recent Tickets Table Styling */
+    .recent-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .recent-table th, .recent-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .recent-table th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      font-weight: 600;
+      background: var(--gray-50);
+    }
+    .recent-table tr:last-child td { border-bottom: none; }
+    
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .badge-status-open { background: var(--primary-100); color: var(--primary-700); }
+    .badge-status-in-progress { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .badge-status-closed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .badge-status-rejected { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <span class="brand-main">Himawari</span>
+        <span class="brand-sub">Digi</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="userName">Loading...</p>
+          <p class="user-role" id="userRole">-</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">Dashboard</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">COSTRA</h1>
+          <p class="page-subtitle">Cost Control Dashboard</p>
+        </div>
+        <button class="btn btn-primary" onclick="window.location.href='ticket.html'">
+          <i class="fa-solid fa-plus"></i> Buat Tiket
+        </button>
+      </div>
+
+      <!-- Stats Grid (6 Cards) -->
+      <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fa-solid fa-desktop"></i></div>
+          <div class="stat-info">
+            <div class="stat-title">Total Aset</div>
+            <div class="stat-value" id="statTotalAsset">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fa-solid fa-check-circle"></i></div>
+          <div class="stat-info">
+            <div class="stat-title">Aset Aktif</div>
+            <div class="stat-value" id="statActiveAsset">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i class="fa-solid fa-circle-xmark"></i></div>
+          <div class="stat-info">
+            <div class="stat-title">Aset Rusak</div>
+            <div class="stat-value" id="statDamagedAsset">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="stat-info">
+            <div class="stat-title">Maintenance</div>
+            <div class="stat-value" id="statMaintenanceAsset">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple"><i class="fa-solid fa-ticket"></i></div>
+          <div class="stat-info">
+            <div class="stat-title">Total Tiket</div>
+            <div class="stat-value" id="statTotalTicket">-</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon teal"><i class="fa-solid fa-building-user"></i></div>
+          <div class="stat-info">
+            <div class="stat-title">Total Klien</div>
+            <div class="stat-value" id="statTotalClient">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Grid -->
+      <div class="charts-grid" style="grid-template-columns: 1fr 2fr;">
+        <!-- Asset Status Chart -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Status Aset</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="assetPieChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monthly Tickets Chart -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Tren Tiket (6 Bulan Terakhir)</h3>
+          </div>
+          <div class="card-body">
+            <div class="chart-container" style="height: 280px;">
+              <canvas id="ticketsChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Tickets Table -->
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Tiket Terbaru</h3>
+          <button class="btn btn-outline btn-sm" onclick="window.location.href='ticket.html'">Lihat Semua</button>
+        </div>
+        <div class="card-body" style="padding: 0; overflow-x: auto;">
+          <table class="recent-table">
+            <thead>
+              <tr>
+                <th>No. Tiket</th>
+                <th>Aset</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentTicketsBody">
+              <tr><td colspan="3" style="text-align: center; padding: 2rem;">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+  </script>
+
+  <!-- Load Chart.js from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+  <script src="../js/modules/dashboard/dashboard.js?v=1"></script>
+
+</body>
+</html>

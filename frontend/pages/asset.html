@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asset — Himawari Digi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/style.css?v=999" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=999" />
+  <link rel="stylesheet" href="../css/pages.css?v=999" />
+  
+<style>
+  #modalForm.modal-overlay,
+  #modalDelete.modal-overlay,
+  #modalPreview.modal-overlay {
+    display: flex !important;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  #modalForm.modal-overlay.active,
+  #modalDelete.modal-overlay.active,
+  #modalPreview.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  
+  /* Wrapper div: ukuran fix, overflow:hidden, tidak bisa dioverride img global reset */
+  .asset-photo-wrap {
+    width: 160px !important;
+    height: 160px !important;
+    min-width: 160px !important;
+    min-height: 160px !important;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: var(--gray-100);
+  }
+  .asset-photo-wrap:hover {
+    transform: scale(1.05);
+    box-shadow: var(--shadow-lg);
+  }
+  /* Img di dalam wrapper: isi penuh, crop ke tengah */
+  .asset-photo-wrap img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    max-width: none !important;
+  }
+  /* Placeholder (saat tidak ada foto) */
+  .asset-thumb-placeholder {
+    width: 160px !important;
+    height: 160px !important;
+    min-width: 160px !important;
+    min-height: 160px !important;
+    border-radius: 10px;
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+    font-size: 2rem;
+    flex-shrink: 0;
+  }
+  
+  .preview-img {
+    width: 300px;
+    height: 300px;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px rgba(0,0,0,0.25);
+    background: var(--gray-900);
+  }
+</style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <span class="brand-main">Himawari</span>
+        <span class="brand-sub">Digi</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="userName">Loading...</p>
+          <p class="user-role" id="userRole">-</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">Asset</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Manajemen Asset</h1>
+          <p class="page-subtitle">Kelola semua asset perusahaan</p>
+        </div>
+        <button class="btn btn-primary" id="btnAdd">
+          <i class="fa-solid fa-plus"></i> Tambah Asset
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Cari nama, kode, serial..." />
+        </div>
+        <select id="filterStatus" class="filter-select">
+          <option value="">Semua Status</option>
+          <option value="active">Aktif</option>
+          <option value="damaged">Rusak</option>
+          <option value="maintenance">Maintenance</option>
+        </select>
+        <button class="btn btn-outline" id="btnRefresh">
+          <i class="fa-solid fa-rotate-right"></i> Refresh
+        </button>
+        <button class="btn btn-danger" id="btnExportPDF" style="background: var(--danger); color: white; border-color: var(--danger);">
+          <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="data-table" id="assetTable">
+            <thead>
+              <tr>
+                <th style="width:40px">#</th>
+                <th style="width:190px">Foto</th>
+                <th>Kode Asset</th>
+                <th>Nama Asset</th>
+                <th>Kategori</th>
+                <th>Brand</th>
+                <th>Client</th>
+                <th>Serial Number</th>
+                <th>Status</th>
+                <th>Lokasi</th>
+                <th>Tgl Beli</th>
+                <th>Garansi</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="assetTableBody">
+              <tr><td colspan="13" class="table-empty">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-info" id="tableInfo">-</div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modalForm">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalFormTitle">Tambah Asset</h3>
+        <button class="modal-close" id="btnCloseForm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="assetForm" enctype="multipart/form-data">
+          <input type="hidden" id="assetId" />
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label class="form-label">Nama Asset <span class="required">*</span></label>
+              <input type="text" class="form-input" id="assetName" placeholder="Contoh: Laptop Dell Latitude" />
+              <span class="form-error" id="nameError"></span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Kategori</label>
+              <select class="form-input" id="assetCategory">
+                <option value="">— Pilih Kategori —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Brand</label>
+              <select class="form-input" id="assetBrand">
+                <option value="">— Pilih Brand —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Client</label>
+              <select class="form-input" id="assetClient">
+                <option value="">— Pilih Client —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Status</label>
+              <select class="form-input" id="assetStatus">
+                <option value="active">Aktif</option>
+                <option value="damaged">Rusak</option>
+                <option value="maintenance">Maintenance</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Serial Number</label>
+              <input type="text" class="form-input" id="assetSerial" placeholder="SN-XXXXXX" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lokasi</label>
+              <input type="text" class="form-input" id="assetLocation" placeholder="Contoh: Ruang Server Lt.2" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tanggal Pembelian</label>
+              <input type="date" class="form-input" id="assetPurchase" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Garansi Sampai</label>
+              <input type="date" class="form-input" id="assetWarranty" />
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Foto Asset</label>
+              <input type="file" class="form-input" id="assetPhoto" accept="image/*" />
+              <span class="form-hint">Format: JPG, PNG, WebP. Maks 2MB</span>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Deskripsi</label>
+              <textarea class="form-input" id="assetDesc" rows="3" placeholder="Keterangan tambahan..."></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelForm">Batal</button>
+        <button class="btn btn-primary" id="btnSaveForm">
+          <span id="saveBtnText">Simpan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalDelete">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Hapus Asset</h3>
+        <button class="modal-close" id="btnCloseDelete"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <p class="confirm-text">Yakin ingin menghapus asset <strong id="deleteAssetName"></strong>?</p>
+        <p class="confirm-sub">Data akan tersimpan tapi tidak ditampilkan.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelDelete">Batal</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalPreview" onclick="AssetPage.closePreview()">
+    <div class="modal modal-md" style="background: transparent; box-shadow: none;" onclick="event.stopPropagation()">
+      <div style="text-align: right; margin-bottom: 0.5rem;">
+        <button class="modal-close" onclick="AssetPage.closePreview()" style="color: white; background: rgba(0,0,0,0.5);">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <img id="previewImage" class="preview-img" src="" alt="Preview Asset" />
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+  </script>
+
+  <!-- jsPDF and AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/utils/serial.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+  <script src="../js/modules/asset/asset.js?v=1001"></script>
+
+</body>
+</html>

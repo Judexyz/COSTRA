@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ticket (Helpdesk) — Himawari Digi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/style.css?v=1" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=1" />
+  <link rel="stylesheet" href="../css/pages.css?v=1" />
+  
+  <style>
+    #modalForm.modal-overlay,
+    #modalDelete.modal-overlay,
+    #modalSolve.modal-overlay {
+      display: flex !important;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #modalForm.modal-overlay.active,
+    #modalDelete.modal-overlay.active,
+    #modalSolve.modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Badge Styles */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    
+    /* Status */
+    .badge-status-open { background: var(--primary-100); color: var(--primary-700); border: 1px solid var(--primary-100); }
+    .badge-status-in-progress { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .badge-status-closed { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .badge-status-rejected { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+    
+    .btn-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    .btn-success:hover { background: rgba(16, 185, 129, 0.2); }
+    
+    .btn-reject {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+    }
+    .btn-reject:hover { background: rgba(239, 68, 68, 0.2); }
+    
+    /* Priority */
+    .badge-priority-low { background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); }
+    .badge-priority-medium { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .badge-priority-high { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+    .badge-priority-critical { background: var(--danger); color: white; border: 1px solid var(--danger); }
+
+    /* Severity */
+    .badge-severity-minor { background: var(--blue-100); color: var(--blue-700); }
+    .badge-severity-major { background: var(--orange-100); color: var(--orange-700); }
+    .badge-severity-critical { background: var(--red-100); color: var(--red-700); }
+
+    .ticket-meta {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <span class="brand-main">Himawari</span>
+        <span class="brand-sub">Digi</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="userName">Loading...</p>
+          <p class="user-role" id="userRole">-</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">Ticket</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Manajemen Insiden</h1>
+          <p class="page-subtitle">Kelola laporan insiden tak terduga (gangguan)</p>
+        </div>
+        <button class="btn btn-primary" id="btnAdd">
+          <i class="fa-solid fa-plus"></i> Buat Insiden
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Cari No Insiden atau deskripsi..." />
+        </div>
+        
+        <select class="form-input" style="width:160px" id="filterStatus">
+          <option value="">Semua Status</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In Progress</option>
+          <option value="closed">Selesai</option>
+          <option value="rejected">Ditolak</option>
+        </select>
+        
+        <select class="form-input" style="width:160px" id="filterPriority">
+          <option value="">Semua Prioritas</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          <option value="critical">Critical</option>
+        </select>
+
+        <button class="btn btn-outline" id="btnRefresh">
+          <i class="fa-solid fa-rotate-right"></i> Refresh
+        </button>
+        <button class="btn btn-danger" id="btnExportPDF" style="background: var(--danger); color: white; border-color: var(--danger);">
+          <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="data-table" id="ticketTable">
+            <thead>
+              <tr>
+                <th style="width:140px">No Insiden</th>
+                <th style="width:100px">Status</th>
+                <th style="width:100px">Priority</th>
+                <th>Deskripsi & Asset</th>
+                <th style="width:150px">Assigned To</th>
+                <th style="width:120px">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="ticketTableBody">
+              <tr><td colspan="6" class="table-empty">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-info" id="tableInfo">-</div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modalForm">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalFormTitle">Buat Insiden Baru</h3>
+        <button class="modal-close" id="btnCloseForm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="ticketForm">
+          <input type="hidden" id="ticketId" />
+          <div class="form-grid">
+            
+            <div class="form-group full-width">
+              <label class="form-label">Deskripsi Masalah / Request <span class="required">*</span></label>
+              <textarea class="form-input" id="ticketDesc" rows="3" placeholder="Jelaskan detail masalah atau permintaan..."></textarea>
+              <span class="form-error" id="descError"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Terkait Asset</label>
+              <select class="form-input" id="ticketAsset">
+                <option value="">-- Pilih Asset (Opsional) --</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Client / Departemen</label>
+              <select class="form-input" id="ticketClient">
+                <option value="">-- Pilih Client (Opsional) --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tingkat Prioritas</label>
+              <select class="form-input" id="ticketPriority">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Severity (Dampak)</label>
+              <select class="form-input" id="ticketSeverity">
+                <option value="minor" selected>Minor</option>
+                <option value="major">Major</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Akar Masalah (Opsional)</label>
+              <select class="form-input" id="ticketCause">
+                <option value="">-- Pilih Akar Masalah --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Dampak Sistem (Opsional)</label>
+              <select class="form-input" id="ticketImpact">
+                <option value="">-- Pilih Dampak --</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Assigned To (Petugas)</label>
+              <select class="form-input" id="ticketAssigned">
+                <option value="">-- Belum Ditugaskan --</option>
+              </select>
+            </div>
+            
+            <div class="form-group" id="statusGroup" style="display: none;">
+              <label class="form-label">Status Tiket</label>
+              <select class="form-input" id="ticketStatus">
+                <option value="open">Open</option>
+                <option value="in_progress">In Progress</option>
+                <option value="closed">Selesai</option>
+                <option value="rejected">Ditolak</option>
+              </select>
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelForm">Batal</button>
+        <button class="btn btn-primary" id="btnSaveForm">
+          <span id="saveBtnText">Simpan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalDelete">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Hapus Tiket</h3>
+        <button class="modal-close" id="btnCloseDelete"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <p class="confirm-text">Yakin ingin menghapus tiket <strong id="deleteTicketNo"></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelDelete">Batal</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalSolve">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <h3 class="modal-title">Selesaikan Tiket</h3>
+        <button class="modal-close" id="btnCloseSolve"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="solveForm">
+          <input type="hidden" id="solveTicketId" />
+          
+          <div class="form-group full-width">
+            <label class="form-label">Akar Masalah (Cause) <span class="required">*</span></label>
+            <select class="form-input" id="solveCause">
+              <option value="">-- Pilih Akar Masalah --</option>
+            </select>
+            <span class="form-error" id="solveCauseError"></span>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Dampak (Impact) <span class="required">*</span></label>
+            <select class="form-input" id="solveImpact">
+              <option value="">-- Pilih Dampak --</option>
+            </select>
+            <span class="form-error" id="solveImpactError"></span>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label">Catatan Solusi (Opsional)</label>
+            <textarea class="form-input" id="solveNote" rows="3" placeholder="Tuliskan catatan penyelesaian masalah..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelSolve">Batal</button>
+        <button class="btn btn-success" id="btnConfirmSolve">Simpan Solusi</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+  </script>
+
+  <!-- jsPDF and AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+  <script src="../js/modules/incident/incident.js?v=1"></script>
+
+</body>
+</html>

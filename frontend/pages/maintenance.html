@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maintenance — Himawari Digi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/style.css?v=1" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=1" />
+  <link rel="stylesheet" href="../css/pages.css?v=1" />
+  
+  <style>
+    #modalForm.modal-overlay,
+    #modalDelete.modal-overlay {
+      display: flex !important;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #modalForm.modal-overlay.active,
+    #modalDelete.modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Status Badges */
+    .badge-status-scheduled { background: var(--primary-100); color: var(--primary-700); border: 1px solid var(--primary-100); }
+    .badge-status-in-progress { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .badge-status-done { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+    .badge-status-cancelled { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+    
+    .btn-success {
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+    }
+    .btn-success:hover { background: rgba(16, 185, 129, 0.2); }
+
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+    }
+    .ticket-meta {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <span class="brand-main">Himawari</span>
+        <span class="brand-sub">Digi</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="userName">Loading...</p>
+          <p class="user-role" id="userRole">-</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">Maintenance</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Jadwal Perawatan</h1>
+          <p class="page-subtitle">Kelola dan jadwalkan perawatan aset secara proaktif</p>
+        </div>
+        <button class="btn btn-primary" id="btnAdd">
+          <i class="fa-solid fa-plus"></i> Buat Jadwal
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Cari nama aset..." />
+        </div>
+        
+        <select class="form-input" style="width:160px" id="filterStatus">
+          <option value="">Semua Status</option>
+          <option value="scheduled">Dijadwalkan</option>
+          <option value="in_progress">Dalam Proses</option>
+          <option value="done">Selesai</option>
+          <option value="cancelled">Dibatalkan</option>
+        </select>
+
+        <button class="btn btn-outline" id="btnRefresh">
+          <i class="fa-solid fa-rotate-right"></i> Refresh
+        </button>
+        <button class="btn btn-danger" id="btnExportPDF" style="background: var(--danger); color: white; border-color: var(--danger);">
+          <i class="fa-solid fa-file-pdf"></i> Export PDF
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="data-table" id="maintenanceTable">
+            <thead>
+              <tr>
+                <th style="width:120px">Jadwal</th>
+                <th>Status</th>
+                <th>Aset & Catatan</th>
+                <th style="width:180px">Teknisi</th>
+                <th style="width:100px">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="maintenanceTableBody">
+              <tr><td colspan="5" class="table-empty">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-info" id="tableInfo">-</div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modalForm">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalFormTitle">Buat Jadwal Perawatan</h3>
+        <button class="modal-close" id="btnCloseForm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="maintenanceForm">
+          <input type="hidden" id="maintenanceId" />
+          <div class="form-grid">
+            
+            <div class="form-group full-width">
+              <label class="form-label">Aset <span class="required">*</span></label>
+              <select class="form-input" id="assetId">
+                <option value="">Pilih Aset...</option>
+              </select>
+              <span class="form-error" id="assetError"></span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Tanggal Jadwal <span class="required">*</span></label>
+              <input type="date" class="form-input" id="scheduleDate" />
+              <span class="form-error" id="scheduleError"></span>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Ditugaskan Ke</label>
+              <select class="form-input" id="technicianId">
+                <option value="">Pilih Teknisi...</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width" id="statusGroup" style="display:none;">
+              <label class="form-label">Status</label>
+              <select class="form-input" id="maintenanceStatus">
+                <option value="scheduled">Dijadwalkan</option>
+                <option value="in_progress">Dalam Proses</option>
+                <option value="done">Selesai</option>
+                <option value="cancelled">Dibatalkan</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Biaya (Rp)</label>
+              <input type="text" class="form-input" id="maintenanceCost" placeholder="Contoh: 1.000.000" />
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Catatan Tambahan</label>
+              <textarea class="form-input" id="maintenanceNotes" rows="3" placeholder="Contoh: Ganti oli mesin, periksa tekanan freon..."></textarea>
+            </div>
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelForm">Batal</button>
+        <button class="btn btn-primary" id="btnSaveForm">
+          <span id="saveBtnText">Simpan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalDelete">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Hapus Jadwal</h3>
+        <button class="modal-close" id="btnCloseDelete"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <p class="confirm-text">Yakin ingin menghapus jadwal ini?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelDelete">Batal</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+  </script>
+
+  <!-- jsPDF and AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+  <script src="../js/modules/maintenance/maintenance.js?v=1"></script>
+
+</body>
+</html>

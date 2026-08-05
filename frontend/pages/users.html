@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Users — Himawari Digi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/style.css?v=1" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=1" />
+  <link rel="stylesheet" href="../css/pages.css?v=1" />
+  
+  <style>
+    #modalForm.modal-overlay,
+    #modalDelete.modal-overlay {
+      display: flex !important;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #modalForm.modal-overlay.active,
+    #modalDelete.modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .user-avatar-wrap {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 1px solid var(--gray-200);
+      flex-shrink: 0;
+      background: var(--surface-card);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .user-avatar-wrap img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      max-width: none !important;
+    }
+    .user-avatar-placeholder {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1rem;
+      text-transform: uppercase;
+    }
+
+    /* Role Badges */
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    .badge-role-super_admin { background: var(--purple-100); color: var(--purple-700); }
+    .badge-role-admin { background: var(--blue-100); color: var(--blue-700); }
+    .badge-role-staff { background: var(--gray-100); color: var(--gray-700); }
+    
+    .user-table-name {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .password-hint {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      margin-top: 4px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <span class="brand-main">Himawari</span>
+        <span class="brand-sub">Digi</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="userName">Loading...</p>
+          <p class="user-role" id="userRole">-</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">Users</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Manajemen Pengguna</h1>
+          <p class="page-subtitle">Kelola akun admin, teknisi, dan staf</p>
+        </div>
+        <button class="btn btn-primary" id="btnAdd">
+          <i class="fa-solid fa-plus"></i> Tambah User
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <i class="fa-solid fa-search"></i>
+          <input type="text" id="searchInput" placeholder="Cari nama atau email..." />
+        </div>
+        
+        <select class="form-input" style="width:160px" id="filterRole">
+          <option value="">Semua Role</option>
+          <option value="super_admin">Super Admin</option>
+          <option value="admin">Admin</option>
+          <option value="staff">Staff</option>
+        </select>
+
+        <button class="btn btn-outline" id="btnRefresh">
+          <i class="fa-solid fa-rotate-right"></i>
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="data-table" id="userTable">
+            <thead>
+              <tr>
+                <th style="width:50px">#</th>
+                <th>Pengguna</th>
+                <th>Email</th>
+                <th style="width:120px">Role</th>
+                <th style="width:150px">Didaftarkan</th>
+                <th style="width:120px">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="userTableBody">
+              <tr><td colspan="6" class="table-empty">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-info" id="tableInfo">-</div>
+          <div class="pagination" id="pagination"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-overlay" id="modalForm">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalFormTitle">Tambah User Baru</h3>
+        <button class="modal-close" id="btnCloseForm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <form id="userForm" enctype="multipart/form-data">
+          <input type="hidden" id="userId" />
+          <div class="form-grid">
+            
+            <div class="form-group full-width">
+              <label class="form-label">Nama Lengkap <span class="required">*</span></label>
+              <input type="text" class="form-input" id="userNameInput" placeholder="Masukkan nama..." />
+              <span class="form-error" id="nameError"></span>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Email <span class="required">*</span></label>
+              <input type="email" class="form-input" id="userEmail" placeholder="email@contoh.com" />
+              <span class="form-error" id="emailError"></span>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Password <span class="required" id="passwordRequiredStar">*</span></label>
+              <input type="password" class="form-input" id="userPassword" placeholder="Minimal 6 karakter" />
+              <span class="password-hint" id="passwordHint"></span>
+              <span class="form-error" id="passwordError"></span>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Role (Hak Akses)</label>
+              <select class="form-input" id="userRoleSelect">
+                <option value="staff" selected>Staff</option>
+                <option value="admin">Admin</option>
+                <option value="super_admin">Super Admin</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label class="form-label">Foto Profil (Avatar)</label>
+              <input type="file" class="form-input" id="userAvatarFile" accept="image/*" />
+              <span class="form-hint">Format: JPG, PNG, WebP. Maks 1MB</span>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelForm">Batal</button>
+        <button class="btn btn-primary" id="btnSaveForm">
+          <span id="saveBtnText">Simpan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalDelete">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title">Hapus User</h3>
+        <button class="modal-close" id="btnCloseDelete"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="confirm-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <p class="confirm-text">Yakin ingin menghapus pengguna <strong id="deleteUserName"></strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btnCancelDelete">Batal</button>
+        <button class="btn btn-danger" id="btnConfirmDelete">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+  </script>
+
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+  <script src="../js/modules/user/users.js?v=1"></script>
+
+</body>
+</html>

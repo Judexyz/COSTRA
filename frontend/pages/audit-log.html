@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Audit Log — Himawari Digi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/dashboard.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <!-- jsPDF & jsPDF-AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <span class="brand-main">Himawari</span>
+        <span class="brand-sub">Digi</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="userName">Loading...</p>
+          <p class="user-role" id="userRole">-</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">Audit Log</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content fade-in">
+      <div class="page-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <h1 class="page-title">Audit Log</h1>
+          <p class="page-subtitle">Riwayat aktivitas pengguna dalam sistem</p>
+        </div>
+      </div>
+
+      <div class="card card-full">
+        <div class="table-toolbar" style="display: flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+          <div class="search-box" style="flex:1; min-width:250px;">
+            <i class="fa-solid fa-search"></i>
+            <input type="text" id="searchInput" class="form-input" placeholder="Cari aksi, modul, detail..." />
+          </div>
+          <button class="btn btn-outline" id="btnRefresh">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+          <button class="btn btn-outline" id="btnClearLog" style="color: var(--danger-600); border-color: var(--danger-600);">
+            <i class="fa-solid fa-trash-can"></i> Clear Log
+          </button>
+          <button class="btn btn-danger" id="btnExportPDF">
+            <i class="fa-solid fa-file-pdf"></i> Export PDF
+          </button>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table" id="auditTable">
+            <thead>
+              <tr>
+                <th style="width:160px">Waktu</th>
+                <th style="width:150px">Pengguna</th>
+                <th style="width:120px">Modul</th>
+                <th style="width:120px">Aksi</th>
+                <th>Detail</th>
+                <th style="width:140px">IP Address</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="6" class="table-empty">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" style="display: flex; gap:5px; margin-top:15px; justify-content:flex-end;">
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  
+  <script>
+    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+  </script>
+
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+  <script src="../js/modules/audit-log/audit-log.js"></script>
+</body>
+</html>

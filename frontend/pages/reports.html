@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports — Himawari Digi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="../css/style.css?v=1" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=1" />
+  <link rel="stylesheet" href="../css/pages.css?v=1" />
+  
+  <style>
+    .report-filter-bar {
+      background: white;
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      margin-bottom: var(--space-5);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-4);
+      align-items: flex-end;
+    }
+    
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .filter-group label {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      font-weight: 500;
+    }
+    
+    .filter-group input {
+      padding: 0.5rem 1rem;
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    
+    .stat-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+    .stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: var(--primary-500); }
+    .stat-icon.red { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+    .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+    .stat-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+    
+    .stat-info h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 2px;
+    }
+    .stat-info p {
+      font-size: 0.875rem;
+      color: var(--gray-500);
+      font-weight: 500;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+    
+    .chart-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--gray-200);
+      padding: var(--space-5);
+    }
+    
+    .chart-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--gray-800);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--gray-100);
+    }
+    
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-brand">
+        <span class="brand-main">Himawari</span>
+        <span class="brand-sub">Digi</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="userName">Loading...</p>
+          <p class="user-role" id="userRole">-</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-wrapper" id="mainWrapper">
+    <!-- Topbar -->
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">Reports</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Report Management</h1>
+          <p class="page-subtitle">Analitik dan Laporan Sistem</p>
+        </div>
+        <div style="display:flex; gap: 8px;">
+           <button class="btn btn-outline" id="btnExportPDF"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+           <button class="btn btn-success" id="btnExportExcel"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+        </div>
+      </div>
+
+      <div class="report-filter-bar">
+        <div class="filter-group">
+          <label>Tanggal Mulai</label>
+          <input type="date" id="filterStartDate" />
+        </div>
+        <div class="filter-group">
+          <label>Tanggal Akhir</label>
+          <input type="date" id="filterEndDate" />
+        </div>
+        <button class="btn btn-primary" id="btnApplyFilter"><i class="fa-solid fa-filter"></i> Terapkan Filter</button>
+        <button class="btn btn-outline" id="btnResetFilter"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+      </div>
+
+      <h2 style="margin-bottom: 1rem; font-size: 1.25rem; font-weight:600;">Ringkasan Data (Summary)</h2>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon blue"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <div class="stat-info">
+            <h3 id="statTotalIncident">0</h3>
+            <p>Total Incident</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon red"><i class="fa-solid fa-file-circle-plus"></i></div>
+          <div class="stat-info">
+            <h3 id="statTotalRequest">0</h3>
+            <p>Total Service Request</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+          <div class="stat-info">
+            <h3 id="statTotalMaintenance">0</h3>
+            <p>Total Maintenance</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green"><i class="fa-solid fa-box-archive"></i></div>
+          <div class="stat-info">
+            <h3 id="statTotalAsset">0</h3>
+            <p>Total Asset Aktif</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">Status Ticket Incident</h3>
+          <div class="chart-container">
+            <canvas id="incidentStatusChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h3 class="chart-title">Status Maintenance</h3>
+          <div class="chart-container">
+            <canvas id="maintenanceStatusChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <h3 class="chart-title">Root Cause</h3>
+          <div class="chart-container">
+            <canvas id="topCauseChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAINTENANCE DETAILS TABLE -->
+      <div class="card mt-4">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h2 class="card-title" style="margin: 0; font-size: 1.1rem;">Detail Data Maintenance</h2>
+          <button class="btn btn-outline" id="btnExportMaintenanceExcel" style="color: #10b981; border-color: #10b981;">
+            <i class="fa-solid fa-file-excel"></i> Export Excel (Maintenance)
+          </button>
+        </div>
+        <div class="table-wrapper">
+          <table class="data-table" id="reportMaintenanceTable">
+            <thead>
+              <tr>
+                <th style="width:120px">Jadwal</th>
+                <th>Aset & Catatan</th>
+                <th style="width:150px">Teknisi</th>
+                <th style="width:120px">Biaya</th>
+                <th style="width:120px">Status</th>
+              </tr>
+            </thead>
+            <tbody id="reportMaintenanceTableBody">
+              <tr><td colspan="5" class="table-empty">Memuat data detail...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-footer">
+          <div class="table-info" id="reportTableInfo">-</div>
+          <div class="pagination" id="reportPagination"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <!-- jsPDF and AutoTable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- SheetJS for Excel Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <!-- SheetJS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+  <script src="../js/modules/reports/reports.js?v=1"></script>
+
+</body>
+</html>

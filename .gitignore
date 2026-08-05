@@ -1,0 +1,21 @@
+# Environment Variables
+backend/config/env.php
+.env
+
+# Uploads and User-Generated Files
+backend/uploads/avatars/*
+!backend/uploads/avatars/default.png
+!backend/uploads/avatars/.gitkeep
+
+# Automatic Backups & Archives
+backend/uploads/backups/*
+!backend/uploads/backups/.gitkeep
+backend/uploads/backups/.last_run
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# Logs and Scratch Files
+*.log
+scratch/
