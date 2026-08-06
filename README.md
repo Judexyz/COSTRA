@@ -178,30 +178,6 @@ backend/
     ├── avatars/
     └── backups/
 ```
-
----
-
-## 🔍 Detail Implementasi & Referensi Kode Penting
-
-Untuk keperluan *technical review*, berikut adalah sorotan arsitektural spesifik dan lokasi penemuannya di dalam *codebase*:
-
-### 1. Alur Autentikasi JWT yang Stateless
-Aplikasi menggunakan JWT untuk mempertahankan status sesi secara aman tanpa bergantung pada sesi dari *server*.
-*   **Implementasi Client-Side (`frontend/js/modules/auth/login.js`)**:
-    *   **Baris 37-80**: Menangani pengiriman form, melakukan validasi *client-side*, mengeksekusi pemanggilan API `fetch`, dan menyimpan JWT secara aman di `localStorage` setelah berhasil.
-*   **Implementasi Server-Side (`backend/api/auth/login.php`)**:
-    *   **Baris 28-38**: Mengeksekusi *Prepared Statement* yang aman untuk mengambil kredensial pengguna dan memvalidasi *hash* menggunakan `password_verify()`.
-    *   **Baris 40-55**: Membuat dan menandatangani JSON Web Token, menyisipkan peran pengguna (*role*) untuk keperluan RBAC di *client-side*.
-
-### 2. Intersepsi Permintaan & Middleware
-Setiap *endpoint* API yang dilindungi diamankan melalui sebuah *middleware* terpusat untuk memastikan kepatuhan terhadap RBAC dan tanda tangan token yang valid.
-*   **Implementasi Middleware (`backend/middleware/auth.php`)**:
-    *   Mencegat (*intercept*) *header* `Authorization: Bearer <token>` yang masuk, mendekode JWT, memverifikasi tanda tangan, dan menyuntikkan konteks pengguna yang telah terautentikasi ke dalam siklus permintaan. Permintaan apa pun yang tidak valid akan langsung ditolak dengan status HTTP `401 Unauthorized`.
-
-### 3. Sistem Pengarsipan Data Otomatis
-Untuk memastikan performa *database* tetap skalabel, sebuah proses di latar belakang (*background process*) berjalan untuk mengarsipkan data lama.
-*   **Mekanisme Pemicu / Trigger (`backend/api/auth/login.php`)**:
-    *   **Baris 59-79**: Pemicu asinkron dijalankan ketika *Super Admin* berhasil *login*. Proses ini memanfaatkan mekanisme *rate-limiting* (berbasis stempel waktu pada file `.last_run`) untuk memastikan proses pengarsipan yang berat hanya dieksekusi maksimal satu kali dalam 24 jam.
 *   **Logika Pengarsipan (`backend/utils/backup.php`)**:
     *   Mengeksekusi kueri selektif untuk menemukan tiket yang berumur lebih dari 6 bulan.
     *   Menserialisasi kumpulan data tersebut ke dalam file JSON dengan format ketat di dalam `backend/uploads/backups/`.
