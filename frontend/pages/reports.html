@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Reports — Himawari Digi</title>
+  <title>Reports — COSTRA</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="../css/style.css?v=1" />
@@ -12,7 +12,7 @@
   
   <style>
     .report-filter-bar {
-      background: white;
+      background: transparent;
       padding: var(--space-4);
       border-radius: var(--radius-lg);
       border: 1px solid var(--gray-200);
@@ -50,7 +50,7 @@
     }
 
     .stat-card {
-      background: white;
+      background: transparent;
       border-radius: var(--radius-xl);
       padding: var(--space-5);
       border: 1px solid var(--gray-200);
@@ -95,7 +95,7 @@
     }
     
     .chart-card {
-      background: white;
+      background: transparent;
       border-radius: var(--radius-lg);
       border: 1px solid var(--gray-200);
       padding: var(--space-5);
@@ -115,6 +115,19 @@
       height: 300px;
       width: 100%;
     }
+
+    #rejectModal.modal-overlay {
+      display: flex !important;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #rejectModal.modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
   </style>
 </head>
 <body>
@@ -122,10 +135,11 @@
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <div class="sidebar-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sidebar-logo" style="background: transparent; padding: 4px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 4px;">
+        <img src="../assets/images/logo.png" alt="COSTRA Logo" style="width: 100%; height: 100%; object-fit: contain;">
+      </div>
       <div class="sidebar-brand">
-        <span class="brand-main">Himawari</span>
-        <span class="brand-sub">Digi</span>
+        <span class="brand-main">COSTRA</span>
       </div>
     </div>
     <nav class="sidebar-nav" id="sidebarNav"></nav>
@@ -158,114 +172,100 @@
     <main class="page-content">
       <div class="page-header">
         <div>
-          <h1 class="page-title">Report Management</h1>
-          <p class="page-subtitle">Analitik dan Laporan Sistem</p>
-        </div>
-        <div style="display:flex; gap: 8px;">
-           <button class="btn btn-outline" id="btnExportPDF"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
-           <button class="btn btn-success" id="btnExportExcel"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+          <h1 class="page-title">Management Control</h1>
+          <p class="page-subtitle">Kontrol Aset Bermasalah & Validasi Biaya</p>
         </div>
       </div>
 
-      <div class="report-filter-bar">
-        <div class="filter-group">
-          <label>Tanggal Mulai</label>
-          <input type="date" id="filterStartDate" />
-        </div>
-        <div class="filter-group">
-          <label>Tanggal Akhir</label>
-          <input type="date" id="filterEndDate" />
-        </div>
-        <button class="btn btn-primary" id="btnApplyFilter"><i class="fa-solid fa-filter"></i> Terapkan Filter</button>
-        <button class="btn btn-outline" id="btnResetFilter"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+      <div class="tabs-container" style="margin-bottom: var(--space-5); border-bottom: 1px solid var(--gray-200); display: flex; gap: 1rem;">
+        <button class="tab-btn active" data-tab="problematic-assets" style="padding: 10px 20px; background: none; border: none; border-bottom: 2px solid var(--primary-600); color: var(--primary-600); font-weight: 600; cursor: pointer;">Aset Bermasalah</button>
+        <button class="tab-btn" data-tab="cost-validation" style="padding: 10px 20px; background: none; border: none; border-bottom: 2px solid transparent; color: var(--gray-500); font-weight: 500; cursor: pointer;">Validasi Biaya</button>
       </div>
 
-      <h2 style="margin-bottom: 1rem; font-size: 1.25rem; font-weight:600;">Ringkasan Data (Summary)</h2>
-      <div class="stat-grid">
-        <div class="stat-card">
-          <div class="stat-icon blue"><i class="fa-solid fa-triangle-exclamation"></i></div>
-          <div class="stat-info">
-            <h3 id="statTotalIncident">0</h3>
-            <p>Total Incident</p>
+      <!-- TAB 1: Problematic Assets -->
+      <div id="tab-problematic-assets" class="tab-content active">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Daftar Aset Perlu Perhatian</h2>
           </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon red"><i class="fa-solid fa-file-circle-plus"></i></div>
-          <div class="stat-info">
-            <h3 id="statTotalRequest">0</h3>
-            <p>Total Service Request</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon orange"><i class="fa-solid fa-screwdriver-wrench"></i></div>
-          <div class="stat-info">
-            <h3 id="statTotalMaintenance">0</h3>
-            <p>Total Maintenance</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon green"><i class="fa-solid fa-box-archive"></i></div>
-          <div class="stat-info">
-            <h3 id="statTotalAsset">0</h3>
-            <p>Total Asset Aktif</p>
+          <div class="table-wrapper">
+            <table class="data-table" id="problematicAssetsTable">
+              <thead>
+                <tr>
+                  <th style="width:120px">Kode Aset</th>
+                  <th>Nama Aset</th>
+                  <th>Kategori / Brand</th>
+                  <th style="width:120px">Total Tiket</th>
+                  <th style="width:150px">Total Biaya Maint.</th>
+                  <th style="width:120px">Status</th>
+                </tr>
+              </thead>
+              <tbody id="problematicAssetsTableBody">
+                <tr><td colspan="6" class="table-empty">Memuat data...</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
 
-      <div class="chart-grid">
-        <div class="chart-card">
-          <h3 class="chart-title">Status Ticket Incident</h3>
-          <div class="chart-container">
-            <canvas id="incidentStatusChart"></canvas>
+      <!-- TAB 2: Cost Validation -->
+      <div id="tab-cost-validation" class="tab-content" style="display: none;">
+        <div class="report-filter-bar">
+          <div class="filter-group">
+            <label>Status Validasi</label>
+            <select id="filterValidationStatus" style="padding: 0.5rem 1rem; border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-family: inherit;">
+              <option value="pending">Menunggu Validasi</option>
+              <option value="validated">Sudah Divalidasi</option>
+              <option value="rejected">Ditolak (Tidak Valid)</option>
+              <option value="all">Semua Data</option>
+            </select>
           </div>
         </div>
-        
-        <div class="chart-card">
-          <h3 class="chart-title">Status Maintenance</h3>
-          <div class="chart-container">
-            <canvas id="maintenanceStatusChart"></canvas>
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Validasi Biaya Maintenance</h2>
           </div>
-        </div>
-
-        <div class="chart-card">
-          <h3 class="chart-title">Root Cause</h3>
-          <div class="chart-container">
-            <canvas id="topCauseChart"></canvas>
+          <div class="table-wrapper">
+            <table class="data-table" id="costValidationTable">
+              <thead>
+                <tr>
+                  <th style="width:120px">Jadwal</th>
+                  <th>Aset & Catatan</th>
+                  <th style="width:150px">Teknisi</th>
+                  <th style="width:150px">Biaya (Rp)</th>
+                  <th style="width:150px">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="costValidationTableBody">
+                <tr><td colspan="5" class="table-empty">Memuat data...</td></tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-      </div>
-
-      <!-- MAINTENANCE DETAILS TABLE -->
-      <div class="card mt-4">
-        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h2 class="card-title" style="margin: 0; font-size: 1.1rem;">Detail Data Maintenance</h2>
-          <button class="btn btn-outline" id="btnExportMaintenanceExcel" style="color: #10b981; border-color: #10b981;">
-            <i class="fa-solid fa-file-excel"></i> Export Excel (Maintenance)
-          </button>
-        </div>
-        <div class="table-wrapper">
-          <table class="data-table" id="reportMaintenanceTable">
-            <thead>
-              <tr>
-                <th style="width:120px">Jadwal</th>
-                <th>Aset & Catatan</th>
-                <th style="width:150px">Teknisi</th>
-                <th style="width:120px">Biaya</th>
-                <th style="width:120px">Status</th>
-              </tr>
-            </thead>
-            <tbody id="reportMaintenanceTableBody">
-              <tr><td colspan="5" class="table-empty">Memuat data detail...</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="table-footer">
-          <div class="table-info" id="reportTableInfo">-</div>
-          <div class="pagination" id="reportPagination"></div>
         </div>
       </div>
 
     </main>
+  </div>
+
+  <!-- Reject Modal -->
+  <div class="modal-overlay" id="rejectModal">
+    <div class="modal modal-md">
+      <div class="modal-header">
+        <h3 class="modal-title">Tolak Validasi Biaya</h3>
+        <button class="modal-close" onclick="ReportsPage.closeRejectModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Alasan Penolakan</label>
+          <textarea id="rejectNotes" class="form-input" rows="4" placeholder="Misal: Kuitansi fisik tidak sesuai dengan nominal yang diinput, harap diperbaiki..." style="width: 100%;"></textarea>
+        </div>
+        <input type="hidden" id="rejectMaintenanceId" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="ReportsPage.closeRejectModal()">Batal</button>
+        <button class="btn btn-danger" onclick="ReportsPage.submitReject()">Tolak Data</button>
+      </div>
+    </div>
   </div>
 
   <div class="toast-container" id="toastContainer"></div>

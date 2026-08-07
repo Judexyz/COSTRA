@@ -3,6 +3,7 @@ const LoginPage = {
   init() {
     this.bindEvents();
     this.loadRemembered();
+    this.loadLiveStats();
   },
 
   bindEvents() {
@@ -11,6 +12,25 @@ const LoginPage = {
 
     if (form) form.addEventListener('submit', (e) => this.handleSubmit(e));
     if (toggleBtn) toggleBtn.addEventListener('click', () => this.togglePassword());
+  },
+
+  async loadLiveStats() {
+    try {
+      const res = await fetch(`${BASE_URL}/public/stats.php`);
+      const data = await res.json();
+      if (data.success) {
+        const d = data.data;
+        const elAssets = document.getElementById('statAssets');
+        const elResolved = document.getElementById('statResolved');
+        const elAttention = document.getElementById('statAttention');
+        
+        if(elAssets) elAssets.innerText = `${d.total_assets} Assets`;
+        if(elResolved) elResolved.innerText = `${d.tickets_resolved} Ticket Selesai`;
+        if(elAttention) elAttention.innerText = `${d.perlu_perhatian} Perlu Perhatian`;
+      }
+    } catch (e) {
+      console.warn('Gagal memuat live stats:', e);
+    }
   },
 
   loadRemembered() {

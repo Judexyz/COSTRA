@@ -435,7 +435,7 @@ const MaintenancePage = {
       const doc = new jsPDF('l', 'pt', 'a4');
 
       doc.setFontSize(18);
-      doc.text('Laporan Jadwal Maintenance - Himawari Digi', 40, 40);
+      doc.text('Laporan Jadwal Maintenance - COSTRA', 40, 40);
       doc.setFontSize(11);
       doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 40, 60);
 
