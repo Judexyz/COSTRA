@@ -2,7 +2,8 @@
 require_once __DIR__ . '/env.php';
 
 function getDB() {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $port = defined('DB_PORT') ? DB_PORT : 3306;
+    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME, $port);
 
     if ($conn->connect_error) {
         http_response_code(500);
