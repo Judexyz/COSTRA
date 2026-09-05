@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS himawari_digi CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE himawari_digi;
+CREATE DATABASE IF NOT EXISTS railway CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE railway;
 
 #tabel roles
 CREATE TABLE roles (

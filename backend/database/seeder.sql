@@ -1,5 +1,5 @@
 #seeder awal
-USE himawari_digi;
+USE railway;
 
 #roles
 INSERT INTO roles (name) VALUES
