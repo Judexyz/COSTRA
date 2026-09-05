@@ -17,8 +17,7 @@ if ($user['role'] !== 'admin' && $user['role'] !== 'super_admin') {
 
 $db = getDB();
 
-// Get filter status
-$status_filter = $_GET['status'] ?? 'all'; // all, validated, pending
+$status_filter = $_GET['status'] ?? 'all'; 
 
 $where = "m.cost > 0";
 if ($status_filter === 'validated') {

@@ -25,7 +25,6 @@ if (!$id) {
     exit();
 }
 
-
 if ($id === (int)$current_user['id']) {
     http_response_code(403);
     echo json_encode(['success' => false, 'message' => 'Tidak dapat menghapus akun sendiri']);

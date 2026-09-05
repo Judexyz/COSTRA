@@ -27,7 +27,7 @@ if (!$id || !$status) {
     exit();
 }
 
-$allowed_status = ['open', 'assigned', 'progress', 'pending', 'closed', 'rejected'];
+$allowed_status = ['open', 'in_progress', 'resolved', 'closed', 'rejected'];
 if (!in_array($status, $allowed_status)) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Status tidak valid']);

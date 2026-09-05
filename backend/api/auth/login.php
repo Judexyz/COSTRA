@@ -63,7 +63,7 @@ if ($user['role'] === 'admin' || $user['role'] === 'super_admin') {
     
     if (file_exists($lastRunFile)) {
         $lastRun = file_get_contents($lastRunFile);
-        if (time() - intval($lastRun) < 86400) { // 24 hours
+        if (time() - intval($lastRun) < 86400) { 
             $shouldRun = false;
         }
     }

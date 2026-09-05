@@ -175,7 +175,7 @@ const AssetBrandPage = {
       const b = data.data[0];
       document.getElementById('brandId').value = b.id;
       document.getElementById('brandName').value = b.name || '';
-      document.getElementById('brandLogo').value = ''; // Reset file input
+      document.getElementById('brandLogo').value = ''; 
       
       document.getElementById('nameError').textContent = '';
       document.getElementById('brandName').classList.remove('is-error');
@@ -218,7 +218,7 @@ const AssetBrandPage = {
 
     try {
       const res = await fetch(url, {
-        method: 'POST', // Both create and update for brand use POST because of FormData
+        method: 'POST', 
         headers: { 
           'Authorization': `Bearer ${Storage.getToken()}` 
         },

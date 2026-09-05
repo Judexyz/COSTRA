@@ -516,14 +516,6 @@ const IncidentPage = {
         return;
       }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('l', 'pt', 'a4');
-
-      doc.setFontSize(18);
-      doc.text('Laporan Data Insiden - COSTRA', 40, 40);
-      doc.setFontSize(11);
-      doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 40, 60);
-
       const tableData = data.data.map((t, i) => {
         const date = new Date(t.created_at).toLocaleDateString('id-ID');
         return [
@@ -538,15 +530,8 @@ const IncidentPage = {
         ];
       });
 
-      doc.autoTable({
-        startY: 80,
-        head: [['No', 'No. Insiden', 'Tanggal', 'Aset', 'Klien', 'Prioritas', 'Status', 'Teknisi']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [59, 130, 246] }
-      });
-
-      doc.save('Laporan_Insiden.pdf');
+      const headers = ['No', 'No. Insiden', 'Tanggal', 'Dampak', 'Root Cause', 'Status', 'Pelapor'];
+      PDFExport.exportProfessionalPDF('Laporan Insiden', headers, tableData, 'Laporan_Insiden.pdf');
     } catch (e) {
       Toast.error('Gagal mengekspor PDF');
       console.error(e);

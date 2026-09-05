@@ -21,7 +21,6 @@ $id          = (int)($input['id']          ?? 0);
 $name        = trim($input['name']         ?? '');
 $description = trim($input['description']  ?? '');
 
-
 if (!$id) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'ID wajib diisi']);
@@ -34,7 +33,6 @@ if (!$name) {
 }
 
 $db = getDB();
-
 
 $check = $db->prepare('SELECT id FROM causes WHERE id = ? AND deleted_at IS NULL');
 $check->bind_param('i', $id);

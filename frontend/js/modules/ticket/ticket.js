@@ -32,6 +32,11 @@ const TicketPage = {
     document.getElementById('btnCloseDelete').addEventListener('click', () => this.closeDelete());
     document.getElementById('btnCancelDelete').addEventListener('click', () => this.closeDelete());
     document.getElementById('btnConfirmDelete').addEventListener('click', () => this.confirmDelete());
+    
+    const btnSend = document.getElementById('btnSendComment');
+    if (btnSend) {
+      btnSend.addEventListener('click', () => this.sendComment());
+    }
   },
 
   async loadLookups() {
@@ -111,6 +116,7 @@ const TicketPage = {
       const statusMap = {
         'open': 'Open',
         'in_progress': 'In Progress',
+        'resolved': 'Menunggu Klien',
         'closed': 'Selesai',
         'rejected': 'Ditolak'
       };
@@ -150,14 +156,20 @@ const TicketPage = {
         </td>
         <td>
           <div class="action-group">
-            ${t.status !== 'closed' ? `<button class="btn btn-icon btn-success btn-sm" onclick="TicketPage.quickStatus(${t.id}, 'closed')" title="Selesai"><i class="fa-solid fa-check"></i></button>` : ''}
-            ${t.status !== 'rejected' ? `<button class="btn btn-icon btn-reject btn-sm" onclick="TicketPage.quickStatus(${t.id}, 'rejected')" title="Tolak"><i class="fa-solid fa-xmark"></i></button>` : ''}
-            <button class="btn btn-icon btn-edit btn-sm" onclick="TicketPage.openEdit(${t.id})" title="Edit">
-              <i class="fa-solid fa-pen"></i>
-            </button>
-            <button class="btn btn-icon btn-delete btn-sm" onclick="TicketPage.openDelete(${t.id}, '${t.ticket_no}')" title="Hapus">
-              <i class="fa-solid fa-trash"></i>
-            </button>
+            ${Storage.getUser()?.role === 'client' ? `
+              <button class="btn btn-icon btn-edit btn-sm" onclick="TicketPage.openEdit(${t.id})" title="Lihat">
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            ` : `
+              ${(t.status !== 'closed' && t.status !== 'resolved') ? `<button class="btn btn-icon btn-success btn-sm" onclick="TicketPage.quickStatus(${t.id}, 'resolved')" title="Selesai (Tunggu Klien)"><i class="fa-solid fa-check"></i></button>` : ''}
+              ${t.status !== 'rejected' ? `<button class="btn btn-icon btn-reject btn-sm" onclick="TicketPage.quickStatus(${t.id}, 'rejected')" title="Tolak"><i class="fa-solid fa-xmark"></i></button>` : ''}
+              <button class="btn btn-icon btn-edit btn-sm" onclick="TicketPage.openEdit(${t.id})" title="Edit">
+                <i class="fa-solid fa-pen"></i>
+              </button>
+              <button class="btn btn-icon btn-delete btn-sm" onclick="TicketPage.openDelete(${t.id}, '${t.ticket_no}')" title="Hapus">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            `}
           </div>
         </td>
       </tr>
@@ -220,6 +232,29 @@ const TicketPage = {
     document.getElementById('ticketDesc').classList.remove('is-error');
     
     document.getElementById('statusGroup').style.display = 'none';
+    document.getElementById('commentsSection').style.display = 'none';
+    
+    document.getElementById('btnSaveForm').style.display = 'inline-block';
+    document.getElementById('clientActionBox').style.display = 'none';
+    
+    // Pastikan semua input di-enable kembali setelah openEdit
+    const inputs = ['ticketDesc', 'ticketPriority', 'ticketSeverity', 'ticketAsset', 'ticketClient', 'ticketAssigned', 'ticketStatus'];
+    inputs.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.disabled = false;
+    });
+    
+    if (Storage.getUser()?.role === 'client') {
+      document.getElementById('ticketPriority').parentElement.style.display = 'none';
+      document.getElementById('ticketSeverity').parentElement.style.display = 'none';
+      document.getElementById('ticketAssigned').parentElement.style.display = 'none';
+      document.getElementById('ticketClient').parentElement.style.display = 'none';
+    } else {
+      document.getElementById('ticketPriority').parentElement.style.display = 'block';
+      document.getElementById('ticketSeverity').parentElement.style.display = 'block';
+      document.getElementById('ticketAssigned').parentElement.style.display = 'block';
+      document.getElementById('ticketClient').parentElement.style.display = 'block';
+    }
 
     await this.loadLookups();
     document.getElementById('modalForm').classList.add('active');
@@ -258,11 +293,193 @@ const TicketPage = {
       document.getElementById('descError').textContent = '';
       document.getElementById('ticketDesc').classList.remove('is-error');
       
+      
+      document.getElementById('commentsSection').style.display = 'flex';
+      
+      let slaText = 'SLA: Aman';
+      let slaColor = 'var(--success-600)';
+      if (t.sla_status === 'warning') { slaText = 'SLA: Warning'; slaColor = 'var(--warning-600)'; }
+      if (t.sla_status === 'breached') { slaText = 'SLA: Breached!'; slaColor = 'var(--danger-600)'; }
+      document.getElementById('slaBadge').innerHTML = `<span style="font-size:0.8rem; font-weight:bold; color:white; background:${slaColor}; padding:3px 8px; border-radius:12px;">${slaText}</span>`;
+      
+      const isClient = Storage.getUser()?.role === 'client';
+      const inputs = ['ticketDesc', 'ticketPriority', 'ticketSeverity', 'ticketAsset', 'ticketClient', 'ticketAssigned', 'ticketStatus'];
+      
+      if (isClient) {
+        document.getElementById('btnSaveForm').style.display = 'none';
+        inputs.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.disabled = true;
+        });
+        
+        document.getElementById('ticketPriority').parentElement.style.display = 'none';
+        document.getElementById('ticketSeverity').parentElement.style.display = 'none';
+        document.getElementById('ticketAssigned').parentElement.style.display = 'none';
+        document.getElementById('ticketClient').parentElement.style.display = 'none';
+        
+        if (t.status === 'resolved') {
+          document.getElementById('clientActionBox').style.display = 'block';
+          document.getElementById('rejectBox').style.display = 'none';
+          document.getElementById('rejectReason').value = '';
+        } else {
+          document.getElementById('clientActionBox').style.display = 'none';
+        }
+      } else {
+        document.getElementById('btnSaveForm').style.display = 'inline-block';
+        document.getElementById('clientActionBox').style.display = 'none';
+        inputs.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.disabled = false;
+        });
+        document.getElementById('ticketPriority').parentElement.style.display = 'block';
+        document.getElementById('ticketSeverity').parentElement.style.display = 'block';
+        document.getElementById('ticketAssigned').parentElement.style.display = 'block';
+        document.getElementById('ticketClient').parentElement.style.display = 'block';
+      }
+      
+      this.loadComments(id);
+      
       document.getElementById('modalForm').classList.add('active');
 
     } catch (e) {
       Toast.error('Gagal memuat data');
       console.error(e);
+    }
+  },
+  
+  promptReject() {
+    document.getElementById('rejectBox').style.display = 'block';
+  },
+
+  async clientAction(action) {
+    if (!this.editId) return;
+    
+    let reason = '';
+    if (action === 'reject') {
+      reason = document.getElementById('rejectReason').value.trim();
+      if (!reason) {
+        Toast.error('Harap berikan alasan kenapa masalah belum selesai');
+        return;
+      }
+    }
+    
+    try {
+      const res = await fetch(`${BASE_URL}/ticket/client_action.php`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${Storage.getToken()}`
+        },
+        body: JSON.stringify({
+          id: this.editId,
+          action: action,
+          reason: reason
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        Toast.success('Tanggapan berhasil dikirim');
+        document.getElementById('clientActionBox').style.display = 'none';
+        this.loadComments(this.editId);
+        this.loadTickets();
+        if (action === 'accept') {
+          document.getElementById('ticketStatus').value = 'closed';
+        } else {
+          document.getElementById('ticketStatus').value = 'in_progress';
+        }
+      } else {
+        Toast.error(data.message || 'Gagal mengirim tanggapan');
+      }
+    } catch (e) {
+      Toast.error('Gagal terhubung ke server');
+    }
+  },
+
+  async loadComments(ticketId) {
+    const list = document.getElementById('commentsList');
+    list.innerHTML = '<div class="text-gray-400" style="text-align:center; margin-top:20px;">Memuat komentar...</div>';
+    
+    try {
+      const res = await fetch(`${BASE_URL}/ticket/get_comments.php?ticket_id=${ticketId}`, {
+        headers: { 'Authorization': `Bearer ${Storage.getToken()}` }
+      });
+      const data = await res.json();
+      
+      if (!data.success) {
+        list.innerHTML = `<div class="text-gray-400" style="text-align:center; margin-top:20px;">Gagal memuat komentar</div>`;
+        return;
+      }
+      
+      if (!data.data || data.data.length === 0) {
+        list.innerHTML = `<div class="text-gray-400" style="text-align:center; font-size:0.9rem; margin-top:20px;">Belum ada diskusi</div>`;
+        return;
+      }
+      
+      list.innerHTML = data.data.map(c => {
+        let attach = '';
+        if (c.file_path) {
+          attach = `<div style="margin-top:8px;"><a href="/Project%20A/${c.file_path}" target="_blank" style="font-size:0.8rem; color:var(--primary-600);"><i class="fa-solid fa-paperclip"></i> ${c.file_name}</a></div>`;
+        }
+        return `
+          <div style="background:var(--gray-50); padding:10px 15px; border-radius:8px; border:1px solid var(--gray-200);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+              <strong style="font-size:0.85rem; color:var(--gray-800);">${this.escapeHtml(c.user_name)}</strong>
+              <small style="color:var(--gray-500); font-size:0.75rem;">${c.created_at}</small>
+            </div>
+            <div style="font-size:0.9rem; color:var(--gray-700); white-space:pre-wrap;">${this.escapeHtml(c.message)}</div>
+            ${attach}
+          </div>
+        `;
+      }).join('');
+      
+      list.scrollTop = list.scrollHeight;
+      
+    } catch (e) {
+      console.error(e);
+      list.innerHTML = `<div class="text-gray-400" style="text-align:center; margin-top:20px;">Error jaringan</div>`;
+    }
+  },
+
+  async sendComment() {
+    if (!this.editId) return;
+    const msgInput = document.getElementById('commentMessage');
+    const fileInput = document.getElementById('commentAttachment');
+    const btn = document.getElementById('btnSendComment');
+    
+    const message = msgInput.value.trim();
+    if (!message) return;
+    
+    btn.disabled = true;
+    btn.innerHTML = 'Mngirim...';
+    
+    const fd = new FormData();
+    fd.append('ticket_id', this.editId);
+    fd.append('message', message);
+    if (fileInput.files[0]) {
+      fd.append('attachment', fileInput.files[0]);
+    }
+    
+    try {
+      const res = await fetch(`${BASE_URL}/ticket/add_comment.php`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${Storage.getToken()}` },
+        body: fd
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        msgInput.value = '';
+        fileInput.value = '';
+        this.loadComments(this.editId);
+      } else {
+        Toast.error(data.message || 'Gagal mengirim komentar');
+      }
+    } catch (e) {
+      console.error(e);
+      Toast.error('Kesalahan jaringan');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Kirim';
     }
   },
 
@@ -404,14 +621,6 @@ const TicketPage = {
         return;
       }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('l', 'pt', 'a4');
-
-      doc.setFontSize(18);
-      doc.text('Laporan Data Tiket - COSTRA', 40, 40);
-      doc.setFontSize(11);
-      doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 40, 60);
-
       const tableData = data.data.map((t, i) => {
         const date = new Date(t.created_at).toLocaleDateString('id-ID');
         return [
@@ -426,15 +635,8 @@ const TicketPage = {
         ];
       });
 
-      doc.autoTable({
-        startY: 80,
-        head: [['No', 'No. Tiket', 'Tanggal', 'Aset', 'Klien', 'Prioritas', 'Status', 'Teknisi']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [59, 130, 246] }
-      });
-
-      doc.save('Laporan_Tiket.pdf');
+      const headers = ['No', 'No. Tiket', 'Tanggal', 'Aset', 'Klien', 'Prioritas', 'Status', 'Teknisi'];
+      PDFExport.exportProfessionalPDF('Laporan Data Tiket', headers, tableData, 'Laporan_Tiket.pdf');
     } catch (e) {
       Toast.error('Gagal mengekspor PDF');
       console.error(e);

@@ -1,11 +1,10 @@
-/*Layout Utama*/
+
 body {
   display: flex;
   min-height: 100vh;
   background: var(--gray-50);
 }
 
-/*Sidebar*/
 .sidebar {
   width: var(--sidebar-width);
   height: 100vh;
@@ -40,7 +39,6 @@ body {
 .brand-main { display: block; font-size: 1.75rem; font-weight: 800; color: white; margin-left: 2px; }
 .brand-sub  { display: block; font-size: 0.75rem; color: var(--primary-400, #60a5fa); }
 
-/*Navigasi Sidebar*/
 .sidebar-nav {
   flex: 1;
   padding: 1rem 0;
@@ -93,7 +91,6 @@ body {
   flex-shrink: 0;
 }
 
-/*Group menu dengan submenu*/
 .nav-group-header {
   display: flex;
   align-items: center;
@@ -141,7 +138,6 @@ body {
 .nav-subitem.active { color: var(--primary-400, #60a5fa); }
 .nav-subitem.active::before { background: var(--primary-400, #60a5fa); }
 
-/*Footer Sidebar*/
 .sidebar-footer {
   padding: 1rem 1.25rem;
   border-top: 1px solid rgba(255,255,255,0.08);
@@ -169,7 +165,6 @@ body {
 .user-name { font-size: 0.8125rem; font-weight: 600; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .user-role { font-size: 0.7rem; color: rgba(255,255,255,0.4); text-transform: capitalize; }
 
-/*Topbar*/
 .main-wrapper {
   margin-left: var(--sidebar-width);
   flex: 1;
@@ -236,7 +231,6 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 
-/*Page Content*/
 .page-content {
   flex: 1;
   padding: 1.5rem;
@@ -263,7 +257,6 @@ body {
   margin-top: 0.25rem;
 }
 
-/*Stats Grid*/
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -271,7 +264,6 @@ body {
   margin-bottom: 1.5rem;
 }
 
-/*Charts Grid*/
 .charts-grid {
   display: grid;
   grid-template-columns: 340px 1fr;
@@ -287,11 +279,9 @@ body {
   justify-content: center;
 }
 
-/*Sidebar Collapsed*/
 .sidebar.collapsed { transform: translateX(-100%); }
 .main-wrapper.expanded { margin-left: 0; }
 
-/*Responsive*/
 @media (max-width: 1024px) {
   .charts-grid { grid-template-columns: 1fr; }
 }

@@ -35,7 +35,6 @@ if ($id <= 0) {
 
 $db = getDB();
 
-// Check if it exists
 $stmt = $db->prepare("SELECT id, cost FROM maintenance WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();

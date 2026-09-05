@@ -23,7 +23,6 @@ $phone       = trim($input['phone']        ?? '');
 $address     = trim($input['address']      ?? '');
 $description = trim($input['description']  ?? '');
 
-
 if (!$id) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'ID wajib diisi']);
@@ -42,7 +41,6 @@ if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
 
 $db = getDB();
 
-
 $check = $db->prepare('SELECT id FROM clients WHERE id = ? AND deleted_at IS NULL');
 $check->bind_param('i', $id);
 $check->execute();
@@ -54,7 +52,6 @@ if ($check->get_result()->num_rows === 0) {
     exit();
 }
 $check->close();
-
 
 if ($email) {
     $dup = $db->prepare('SELECT id FROM clients WHERE email = ? AND id != ? AND deleted_at IS NULL');

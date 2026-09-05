@@ -98,14 +98,6 @@ const AuditLogPage = {
   },
 
   exportPDF() {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
-    doc.setFontSize(16);
-    doc.text('Laporan Audit Log', 14, 20);
-    doc.setFontSize(10);
-    doc.text(`Dicetak pada: ${new Date().toLocaleString('id-ID')}`, 14, 26);
-
     const tableData = this.dataList.map(log => [
       new Date(log.created_at).toLocaleString('id-ID'),
       log.user_name || 'System',
@@ -115,15 +107,8 @@ const AuditLogPage = {
       log.ip_address || '-'
     ]);
 
-    doc.autoTable({
-      head: [['Waktu', 'Pengguna', 'Modul', 'Aksi', 'Detail', 'IP Address']],
-      body: tableData,
-      startY: 32,
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [59, 130, 246] }
-    });
-
-    doc.save('Audit_Log.pdf');
+    const headers = ['No', 'Waktu', 'User', 'Aksi', 'Modul', 'Detail'];
+      PDFExport.exportProfessionalPDF('Laporan Audit Log', headers, tableData, 'Laporan_AuditLog.pdf');
   },
 
   async clearLogs() {

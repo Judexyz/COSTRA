@@ -129,14 +129,6 @@ const Backup = {
         return;
       }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('landscape');
-
-      doc.setFontSize(14);
-      doc.text(`Arsip Tiket: ${filename.replace('.json', '')}`, 14, 15);
-      doc.setFontSize(10);
-      doc.text(`Tanggal Arsip: ${this.formatDate(jsonData.archived_at)} | Total: ${jsonData.total_records} Tiket`, 14, 22);
-
       const tableData = jsonData.data.map(t => [
         t.ticket_number || '-',
         this.formatDate(t.created_at),
@@ -151,7 +143,7 @@ const Backup = {
         head: [['No Tiket', 'Tanggal', 'Deskripsi', 'Prioritas', 'Dampak', 'Status']],
         body: tableData,
         theme: 'grid',
-        headStyles: { fillColor: [15, 23, 42] }, // Dark slate to match theme
+        headStyles: { fillColor: [15, 23, 42] }, 
         styles: { fontSize: 8 }
       });
 
@@ -182,7 +174,7 @@ const Backup = {
       
       if (res.success) {
         Toast.show(res.message, 'success');
-        this.loadBackups(); // Refresh the list
+        this.loadBackups(); 
       } else {
         Toast.show(res.message || 'Gagal mengarsipkan tiket', 'error');
       }

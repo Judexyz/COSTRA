@@ -431,21 +431,6 @@ const MaintenancePage = {
         return;
       }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('l', 'pt', 'a4');
-
-      doc.setFontSize(18);
-      doc.text('Laporan Jadwal Maintenance - COSTRA', 40, 40);
-      doc.setFontSize(11);
-      doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 40, 60);
-
-      const statusMap = {
-        'scheduled': 'Dijadwalkan',
-        'in_progress': 'Dalam Proses',
-        'done': 'Selesai',
-        'cancelled': 'Dibatalkan'
-      };
-
       const tableData = data.data.map((m, i) => {
         const scheduleDate = new Date(m.schedule).toLocaleDateString('id-ID');
         return [
@@ -458,15 +443,8 @@ const MaintenancePage = {
         ];
       });
 
-      doc.autoTable({
-        startY: 80,
-        head: [['No', 'Jadwal', 'Aset', 'Teknisi', 'Status', 'Catatan']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [59, 130, 246] }
-      });
-
-      doc.save('Laporan_Maintenance.pdf');
+      const headers = ['No', 'Tanggal', 'Aset', 'Klien', 'Tipe', 'Status', 'Teknisi'];
+      PDFExport.exportProfessionalPDF('Laporan Jadwal Maintenance', headers, tableData, 'Laporan_Maintenance.pdf');
     } catch (e) {
       Toast.error('Gagal mengekspor PDF');
       console.error(e);

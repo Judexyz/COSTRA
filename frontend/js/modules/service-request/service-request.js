@@ -516,14 +516,6 @@ const ServiceRequestPage = {
         return;
       }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('l', 'pt', 'a4');
-
-      doc.setFontSize(18);
-      doc.text('Laporan Service Request - COSTRA', 40, 40);
-      doc.setFontSize(11);
-      doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 40, 60);
-
       const tableData = data.data.map((t, i) => {
         const date = new Date(t.created_at).toLocaleDateString('id-ID');
         return [
@@ -538,15 +530,8 @@ const ServiceRequestPage = {
         ];
       });
 
-      doc.autoTable({
-        startY: 80,
-        head: [['No', 'No. Request', 'Tanggal', 'Aset', 'Klien', 'Prioritas', 'Status', 'Teknisi']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [59, 130, 246] }
-      });
-
-      doc.save('Laporan_Service_Request.pdf');
+      const headers = ['No', 'No. Request', 'Tanggal', 'Klien', 'Tipe', 'Status', 'Prioritas'];
+      PDFExport.exportProfessionalPDF('Laporan Service Request', headers, tableData, 'Laporan_Service_Request.pdf');
     } catch (e) {
       Toast.error('Gagal mengekspor PDF');
       console.error(e);

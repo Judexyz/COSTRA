@@ -37,18 +37,40 @@ if (!in_array($severity, $allowed_severity)) $severity = 'minor';
 
 $db = getDB();
 
+if (!$user_id) {
+    if ($asset_id) {
+        $res = $db->query("SELECT category_id FROM assets WHERE id = $asset_id");
+        if ($res && $res->num_rows > 0) {
+            $cat_id = $res->fetch_assoc()['category_id'];
+            $tech_res = $db->query("SELECT id FROM users WHERE role IN ('technician', 'admin') ORDER BY RAND() LIMIT 1");
+            if ($tech_res && $tech_res->num_rows > 0) {
+                $user_id = $tech_res->fetch_assoc()['id'];
+            }
+        }
+    }
+    if (!$user_id) $user_id = 1; 
+}
+
+$sla_hours = 48;
+if ($priority === 'critical') $sla_hours = 4;
+elseif ($priority === 'high') $sla_hours = 12;
+elseif ($priority === 'low') $sla_hours = 120;
+$sla_due_date = date('Y-m-d H:i:s', strtotime("+$sla_hours hours"));
+$sla_status = 'ok';
+
 $year   = date('Y');
 $count  = $db->query("SELECT COUNT(*) as total FROM tickets WHERE YEAR(created_at) = $year")->fetch_assoc()['total'];
 $ticket_no = 'TKT-' . $year . '-' . str_pad($count + 1, 4, '0', STR_PAD_LEFT);
 
 $stmt = $db->prepare('INSERT INTO tickets
-    (ticket_no, asset_id, client_id, user_id, priority, severity, status, description)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    (ticket_no, asset_id, client_id, user_id, priority, severity, status, description, sla_due_date, sla_status, created_by)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 
 $status = 'open';
-$stmt->bind_param('siiissss',
+$created_by = $user['id'];
+$stmt->bind_param('siiissssssi',
     $ticket_no, $asset_id, $client_id, $user_id,
-    $priority, $severity, $status, $description
+    $priority, $severity, $status, $description, $sla_due_date, $sla_status, $created_by
 );
 
 if ($stmt->execute()) {

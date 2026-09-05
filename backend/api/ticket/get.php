@@ -6,7 +6,7 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../middleware/auth.php';
 
-authenticate();
+$user = authenticate();
 
 $db      = getDB();
 $search  = $_GET['search']    ?? '';
@@ -25,6 +25,12 @@ $order = strtoupper($order) === 'ASC' ? 'ASC' : 'DESC';
 $where  = "t.deleted_at IS NULL";
 $params = [];
 $types  = '';
+
+if ($user['role'] === 'client') {
+    $where .= " AND t.created_by = ?";
+    $params[] = $user['id'];
+    $types .= 'i';
+}
 
 if ($search) {
     $where   .= " AND (t.ticket_no LIKE ? OR t.description LIKE ?)";
@@ -51,7 +57,7 @@ $count_stmt->close();
 
 $sql = "SELECT
     t.id, t.ticket_no, t.status, t.priority, t.severity, t.description, t.created_at,
-    t.asset_id, t.client_id, t.user_id,
+    t.asset_id, t.client_id, t.user_id, t.sla_due_date, t.sla_status,
     a.name  AS asset_name,
     a.asset_code,
     cl.name AS client_name,

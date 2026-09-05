@@ -6,9 +6,9 @@
   <title>Ticket (Helpdesk) — COSTRA</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="../css/style.css?v=1" />
-  <link rel="stylesheet" href="../css/dashboard.css?v=1" />
-  <link rel="stylesheet" href="../css/pages.css?v=1" />
+  <link rel="stylesheet" href="../css/style.css?v=1786348139" />
+  <link rel="stylesheet" href="../css/dashboard.css?v=1786348139" />
+  <link rel="stylesheet" href="../css/pages.css?v=1786348139" />
   
   <style>
     #modalForm.modal-overlay,
@@ -39,6 +39,7 @@
     /* Status */
     .badge-status-open { background: var(--primary-100); color: var(--primary-700); border: 1px solid var(--primary-100); }
     .badge-status-in-progress { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.2); }
+    .badge-status-resolved { background: rgba(59, 130, 246, 0.15); color: var(--primary-600); border: 1px solid rgba(59, 130, 246, 0.2); }
     .badge-status-closed { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
     .badge-status-rejected { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
     
@@ -181,8 +182,9 @@
         <h3 class="modal-title" id="modalFormTitle">Buat Tiket Baru</h3>
         <button class="modal-close" id="btnCloseForm"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="modal-body">
-        <form id="ticketForm">
+      <div class="modal-body" style="display: flex; gap: 20px;">
+        <div style="flex: 1;">
+          <form id="ticketForm">
           <input type="hidden" id="ticketId" />
           <div class="form-grid">
             
@@ -237,13 +239,47 @@
               <select class="form-input" id="ticketStatus">
                 <option value="open">Open</option>
                 <option value="in_progress">In Progress</option>
-                <option value="closed">Selesai</option>
+                <option value="resolved">Selesai (Menunggu Konfirmasi)</option>
+                <option value="closed">Selesai (Ditutup)</option>
                 <option value="rejected">Ditolak</option>
               </select>
             </div>
 
           </div>
         </form>
+        </div>
+        
+        <div id="commentsSection" style="flex: 1; display: none; flex-direction: column; border-left: 1px solid var(--gray-200); padding-left: 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+            <h4 style="margin:0; color:var(--gray-800);">Utas Diskusi</h4>
+            <span id="slaBadge"></span>
+          </div>
+          
+          <div id="commentsList" style="flex: 1; overflow-y: auto; max-height: 380px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; padding-right: 5px;">
+            <div class="text-gray-400" style="text-align:center; font-size: 0.9rem; margin-top: 20px;">Memuat komentar...</div>
+          </div>
+          
+          <div id="clientActionBox" style="display:none; background: var(--primary-50); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--primary-200);">
+            <h5 style="margin:0 0 10px 0;">Konfirmasi Penyelesaian</h5>
+            <p style="font-size: 0.85rem; margin:0 0 10px 0;">Teknisi menyatakan tiket ini telah selesai. Apakah masalah Anda sudah teratasi?</p>
+            <div style="display:flex; gap: 10px;">
+              <button type="button" class="btn btn-success" onclick="TicketPage.clientAction('accept')"><i class="fa-solid fa-check"></i> Ya, Selesai</button>
+              <button type="button" class="btn btn-reject" onclick="TicketPage.promptReject()"><i class="fa-solid fa-xmark"></i> Belum Selesai</button>
+            </div>
+            <div id="rejectBox" style="display:none; margin-top:10px;">
+              <textarea id="rejectReason" class="form-input" rows="2" placeholder="Jelaskan kenapa belum selesai..."></textarea>
+              <button type="button" class="btn btn-reject" style="margin-top:5px;" onclick="TicketPage.clientAction('reject')">Kirim Penolakan</button>
+            </div>
+          </div>
+          
+          <form id="commentForm" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--gray-200); padding-top: 15px;">
+            <textarea id="commentMessage" class="form-input" rows="2" placeholder="Ketik balasan Anda di sini..."></textarea>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <input type="file" id="commentAttachment" class="form-input" style="flex: 1; padding: 6px; font-size: 0.85rem;" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" />
+              <button type="button" class="btn btn-primary" id="btnSendComment" style="white-space: nowrap;"><i class="fa-solid fa-paper-plane"></i> Kirim</button>
+            </div>
+          </form>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" id="btnCancelForm">Batal</button>
@@ -285,7 +321,7 @@
   <script src="../js/shared/toast.js"></script>
   <script src="../js/shared/sidebar.js"></script>
   <script src="../js/shared/topbar.js"></script>
-  <script src="../js/modules/ticket/ticket.js?v=1"></script>
+  <script src="../js/modules/ticket/ticket.js?v=1786348139"></script>
 
 </body>
 </html>

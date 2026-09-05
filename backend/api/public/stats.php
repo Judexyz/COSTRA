@@ -7,16 +7,13 @@ require_once __DIR__ . '/../../config/db.php';
 
 try {
     $db = getDB();
-    
-    // Total Assets
+
     $res = $db->query("SELECT COUNT(id) as total FROM assets WHERE deleted_at IS NULL");
     $total_assets = $res->fetch_assoc()['total'];
-    
-    // Tickets Resolved
+
     $res = $db->query("SELECT COUNT(id) as total FROM tickets WHERE status = 'closed'");
     $tickets_resolved = $res->fetch_assoc()['total'];
-    
-    // Perlu Perhatian (Open Tickets yang belum dihapus)
+
     $res = $db->query("SELECT COUNT(id) as total FROM tickets WHERE status != 'closed' AND deleted_at IS NULL");
     $perlu_perhatian = $res->fetch_assoc()['total'];
     

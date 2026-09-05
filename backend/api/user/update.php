@@ -73,7 +73,6 @@ if ($dup->get_result()->num_rows > 0) {
 }
 $dup->close();
 
-
 $avatar = $existing['avatar'];
 if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === 0) {
     $allowed_ext = ['jpg', 'jpeg', 'png', 'webp'];
@@ -105,7 +104,6 @@ if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === 0) {
         $avatar = $filename;
     }
 }
-
 
 if ($password) {
     $hashed = password_hash($password, PASSWORD_DEFAULT);

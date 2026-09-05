@@ -6,7 +6,6 @@ header('Access-Control-Allow-Headers: Content-Type, Authorization');
 require_once __DIR__ . '/../../config/db.php';
 require_once __DIR__ . '/../../middleware/auth.php';
 
-
 $db = getDB();
 
 $db->query("CREATE TABLE IF NOT EXISTS incidents LIKE tickets");

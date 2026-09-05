@@ -14,7 +14,7 @@ function authenticate() {
         exit();
     }
 
-    $token   = substr($auth, 7);
+    $token   = trim(substr($auth, 7));
     $decoded = verifyToken($token);
 
     if (!$decoded) {
@@ -34,11 +34,11 @@ function verifyToken($token) {
         $parts = explode('.', $token);
         if (count($parts) !== 3) return false;
 
-        $payload   = json_decode(base64_decode($parts[1]), true);
+        $payload   = json_decode(base64url_decode($parts[1]), true);
         $signature = hash_hmac('sha256', $parts[0] . '.' . $parts[1], JWT_SECRET);
 
         if ($signature !== $parts[2]) return false;
-        if ($payload['exp'] < time())  return false;
+        if (!$payload || !isset($payload['exp']) || $payload['exp'] < time()) return false;
 
         return $payload;
     } catch (Exception $e) {
@@ -47,8 +47,8 @@ function verifyToken($token) {
 }
 
 function generateToken($data) {
-    $header  = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
-    $payload = base64_encode(json_encode([
+    $header  = base64url_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
+    $payload = base64url_encode(json_encode([
         ...$data,
         'iat' => time(),
         'exp' => time() + (60 * 60 * 24)
@@ -56,4 +56,12 @@ function generateToken($data) {
     $signature = hash_hmac('sha256', "$header.$payload", JWT_SECRET);
 
     return "$header.$payload.$signature";
+}
+
+function base64url_encode($data) {
+    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+}
+
+function base64url_decode($data) {
+    return base64_decode(strtr($data, '-_', '+/'));
 }

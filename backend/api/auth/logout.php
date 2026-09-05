@@ -12,9 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-
 authenticate();
-
 
 echo json_encode([
     'success' => true,

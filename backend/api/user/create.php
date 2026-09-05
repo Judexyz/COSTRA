@@ -57,7 +57,7 @@ $dup->close();
 $avatar = null;
 if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === 0) {
     $allowed_ext = ['jpg', 'jpeg', 'png', 'webp'];
-    $max_size    = 1 * 1024 * 1024; //1MB
+    $max_size    = 1 * 1024 * 1024; 
     $file        = $_FILES['avatar'];
     $ext         = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
 

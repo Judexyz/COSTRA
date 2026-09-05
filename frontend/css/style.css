@@ -1,4 +1,4 @@
-/*CSS Variables (Design Tokens)*/
+
 :root {
   --primary-50: #eff6ff;
   --primary-100: #dbeafe;
@@ -75,7 +75,6 @@
   --topbar-height: 64px;
 }
 
-/*Reset*/
 *,
 *::before,
 *::after {
@@ -132,7 +131,6 @@ select {
   font-size: var(--font-base);
 }
 
-/*Scrollbar*/
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -151,7 +149,6 @@ select {
   background: var(--gray-400);
 }
 
-/*Button*/
 .btn {
   display: inline-flex;
   align-items: center;
@@ -221,7 +218,6 @@ select {
   transform: none !important;
 }
 
-/*Card*/
 .card {
   background: var(--surface-card);
   border-radius: var(--radius-xl);
@@ -293,7 +289,6 @@ select {
   margin-top: var(--space-1);
 }
 
-/*Form*/
 .form-group {
   display: flex;
   flex-direction: column;
@@ -337,7 +332,6 @@ select {
   color: var(--danger);
 }
 
-/*Badge*/
 .badge {
   display: inline-flex;
   align-items: center;
@@ -380,7 +374,6 @@ select {
   color: var(--gray-600);
 }
 
-/*Table*/
 .table-container {
   width: 100%;
   overflow-x: auto;
@@ -420,7 +413,6 @@ select {
   vertical-align: middle;
 }
 
-/*Modal*/
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -498,7 +490,6 @@ select {
   gap: var(--space-3);
 }
 
-/*Toast*/
 .toast-container {
   position: fixed;
   bottom: var(--space-6);
@@ -568,7 +559,6 @@ select {
   }
 }
 
-/*Skeleton*/
 .skeleton {
   background: linear-gradient(90deg, var(--gray-200) 25%, var(--gray-100) 50%, var(--gray-200) 75%);
   background-size: 200% 100%;
@@ -586,7 +576,6 @@ select {
   }
 }
 
-/*Empty State*/
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -613,7 +602,6 @@ select {
   font-size: var(--font-sm);
 }
 
-/*Pagination*/
 .pagination {
   display: flex;
   align-items: center;
@@ -650,7 +638,6 @@ select {
   cursor: not-allowed;
 }
 
-/*Spinner*/
 .spinner {
   width: 36px;
   height: 36px;
@@ -666,7 +653,6 @@ select {
   }
 }
 
-/*Responsive*/
 @media (max-width: 768px) {
   :root {
     --sidebar-width: 0px;

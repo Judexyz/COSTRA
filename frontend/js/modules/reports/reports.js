@@ -11,15 +11,14 @@ const ReportsPage = {
     const tabBtns = document.querySelectorAll('.tab-btn');
     tabBtns.forEach(btn => {
       btn.addEventListener('click', (e) => {
-        // Reset all tabs
+        
         document.querySelectorAll('.tab-btn').forEach(b => {
           b.classList.remove('active');
           b.style.borderBottomColor = 'transparent';
           b.style.color = 'var(--gray-500)';
         });
         document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-        
-        // Activate current tab
+
         const target = e.target;
         target.classList.add('active');
         target.style.borderBottomColor = 'var(--primary-600)';
@@ -28,7 +27,6 @@ const ReportsPage = {
         const tabId = target.getAttribute('data-tab');
         document.getElementById('tab-' + tabId).style.display = 'block';
 
-        // Load data based on tab
         if (tabId === 'problematic-assets') {
           this.loadProblematicAssets();
         } else if (tabId === 'cost-validation') {

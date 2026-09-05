@@ -414,14 +414,6 @@ const AssetPage = {
         return;
       }
 
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF('l', 'pt', 'a4');
-
-      doc.setFontSize(18);
-      doc.text('Laporan Data Aset - COSTRA', 40, 40);
-      doc.setFontSize(11);
-      doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 40, 60);
-
       const tableData = data.data.map((a, i) => [
         i + 1,
         a.asset_code || '-',
@@ -432,15 +424,8 @@ const AssetPage = {
         a.location || '-'
       ]);
 
-      doc.autoTable({
-        startY: 80,
-        head: [['No', 'Kode Aset', 'Nama Aset', 'Kategori', 'Merek', 'Status', 'Lokasi']],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [59, 130, 246] }
-      });
-
-      doc.save('Laporan_Aset.pdf');
+      const headers = ['No', 'Kode Aset', 'Nama Aset', 'Kategori', 'Merek', 'Status', 'Lokasi'];
+      PDFExport.exportProfessionalPDF('Laporan Data Aset', headers, tableData, 'Laporan_Aset.pdf');
     } catch (e) {
       Toast.error('Gagal mengekspor PDF');
       console.error(e);

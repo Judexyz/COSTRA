@@ -11,6 +11,12 @@ require_once __DIR__ . '/../../utils/audit.php';
 
 $user = authenticate();
 
+if ($user['role'] === 'client') {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Client tidak diizinkan mengubah detail tiket secara langsung']);
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
     http_response_code(405);
     echo json_encode(['success' => false, 'message' => 'Method tidak diizinkan']);
@@ -40,7 +46,7 @@ if (!$description) {
 
 $allowed_priority = ['low', 'medium', 'high', 'critical'];
 $allowed_severity = ['minor', 'major', 'critical'];
-$allowed_status   = ['open', 'assigned', 'progress', 'pending', 'closed'];
+$allowed_status   = ['open', 'in_progress', 'resolved', 'closed', 'rejected'];
 
 if (!in_array($priority, $allowed_priority)) $priority = 'medium';
 if (!in_array($severity, $allowed_severity)) $severity = 'minor';

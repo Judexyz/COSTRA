@@ -264,7 +264,7 @@ const UsersPage = {
 
     try {
       const res = await fetch(url, {
-        method: 'POST', // Both create and update use POST in this backend because of FormData (multipart)
+        method: 'POST', 
         headers: { 
           'Authorization': `Bearer ${Storage.getToken()}` 
         },

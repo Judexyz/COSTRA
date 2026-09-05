@@ -20,7 +20,6 @@ $id          = (int)($input['id']          ?? 0);
 $name        = trim($input['name']         ?? '');
 $description = trim($input['description']  ?? '');
 
-
 if (!$id) {
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'ID wajib diisi']);
@@ -34,7 +33,6 @@ if (!$name) {
 
 $db = getDB();
 
-
 $check = $db->prepare('SELECT id FROM asset_categories WHERE id = ? AND deleted_at IS NULL');
 $check->bind_param('i', $id);
 $check->execute();
@@ -47,7 +45,6 @@ if ($check->get_result()->num_rows === 0) {
 }
 $check->close();
 
-
 $dup = $db->prepare('SELECT id FROM asset_categories WHERE name = ? AND id != ? AND deleted_at IS NULL');
 $dup->bind_param('si', $name, $id);
 $dup->execute();
@@ -59,7 +56,6 @@ if ($dup->get_result()->num_rows > 0) {
     exit();
 }
 $dup->close();
-
 
 $stmt = $db->prepare('UPDATE asset_categories SET name = ?, description = ?, updated_at = NOW() WHERE id = ?');
 $stmt->bind_param('ssi', $name, $description, $id);
