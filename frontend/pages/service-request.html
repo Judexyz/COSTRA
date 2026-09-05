@@ -329,7 +329,7 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script>
-    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+    const BASE_URL = window.location.origin + (window.location.pathname.includes('/Project%20A/') || window.location.pathname.includes('/Project A/') ? '/Project%20A/backend/api' : '/backend/api');
   </script>
 
   <!-- jsPDF and AutoTable -->
