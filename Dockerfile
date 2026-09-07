@@ -7,8 +7,9 @@ WORKDIR /app
 
 COPY . .
 
-# Railway injects $PORT at runtime; default to 8080 for local use
+# Railway injects $PORT at runtime; default to 8080 for local use only
 ENV PORT=8080
 EXPOSE 8080
 
-CMD php -S 0.0.0.0:$PORT -t .
+# Use explicit shell form so $PORT is expanded at container start
+CMD ["sh", "-c", "exec php -S 0.0.0.0:$PORT -t ."]
