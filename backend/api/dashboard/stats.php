@@ -26,11 +26,15 @@ $open_ticket = $db->query("SELECT COUNT(*) as total FROM tickets WHERE status = 
 $total_client = $db->query("SELECT COUNT(*) as total FROM clients WHERE deleted_at IS NULL")->fetch_assoc()['total'];
 
 $monthly = $db->query("
-    SELECT DATE_FORMAT(created_at, '%b %Y') as month, COUNT(*) as total
+    SELECT
+        DATE_FORMAT(created_at, '%b %Y') as month,
+        YEAR(created_at) as yr,
+        MONTH(created_at) as mo,
+        COUNT(*) as total
     FROM tickets
     WHERE created_at >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
-    GROUP BY YEAR(created_at), MONTH(created_at)
-    ORDER BY created_at ASC
+    GROUP BY YEAR(created_at), MONTH(created_at), DATE_FORMAT(created_at, '%b %Y')
+    ORDER BY yr ASC, mo ASC
 ")->fetch_all(MYSQLI_ASSOC);
 
 $db->close();
