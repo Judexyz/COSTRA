@@ -1,5 +1,4 @@
 # Environment Variables
-backend/config/env.php
 .env
 
 # Uploads and User-Generated Files
