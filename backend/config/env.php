@@ -31,5 +31,5 @@ $railwayDomain = env_var('RAILWAY_PUBLIC_DOMAIN', null);
 if ($railwayDomain) {
     define('APP_URL', 'https://' . $railwayDomain);
 } else {
-    define('APP_URL', 'http://localhost/project_a/backend');
+    define('APP_URL', 'http://localhost/backend');
 }

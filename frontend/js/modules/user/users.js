@@ -74,7 +74,7 @@ const UsersPage = {
       const no = start + i;
       let avatarHtml = `<div class="user-avatar-placeholder">${u.name.charAt(0).toUpperCase()}</div>`;
       if (u.avatar) {
-        avatarHtml = `<div class="user-avatar-wrap"><img src="/Project A/uploads/avatars/${u.avatar}" alt="Avatar" onerror="this.parentElement.innerHTML='<div class=\\'user-avatar-placeholder\\'>${u.name.charAt(0).toUpperCase()}</div>'"/></div>`;
+        avatarHtml = `<div class="user-avatar-wrap"><img src="/uploads/avatars/${u.avatar}" alt="Avatar" onerror="this.parentElement.innerHTML='<div class=\\'user-avatar-placeholder\\'>${u.name.charAt(0).toUpperCase()}</div>'"/></div>`;
       }
 
       let date = new Date(u.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });

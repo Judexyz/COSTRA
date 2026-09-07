@@ -1,5 +1,5 @@
 <?php
-$dir = new RecursiveDirectoryIterator('d:/Project A/frontend/pages/');
+$dir = new RecursiveDirectoryIterator(__DIR__ . '/../../frontend/pages/');
 $ite = new RecursiveIteratorIterator($dir);
 
 $version = time();

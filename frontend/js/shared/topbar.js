@@ -37,7 +37,7 @@ const Topbar = {
       }
 
       Storage.clearAll();
-      window.location.href = '/Project A/index.html';
+      window.location.href = '/index.html';
     });
   }
 

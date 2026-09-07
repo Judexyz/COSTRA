@@ -101,7 +101,7 @@ const Backup = {
       Toast.show('Anda harus login', 'error');
       return;
     }
-    const url = `/Project A/backend/api/backup/download.php?file=${encodeURIComponent(filename)}&token=${encodeURIComponent(token)}`;
+    const url = `/backend/api/backup/download.php?file=${encodeURIComponent(filename)}&token=${encodeURIComponent(token)}`;
     window.open(url, '_blank');
   },
 

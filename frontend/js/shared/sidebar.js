@@ -46,7 +46,7 @@ const Sidebar = {
   init() {
     const user = Storage.getUser();
     if (!user) {
-      window.location.href = '/Project A/index.html';
+      window.location.href = '/index.html';
       return;
     }
 
