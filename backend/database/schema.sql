@@ -103,6 +103,8 @@ CREATE TABLE tickets (
     priority    ENUM('low','medium','high','critical') DEFAULT 'medium',
     severity    ENUM('minor','major','critical') DEFAULT 'minor',
     status      ENUM('open','assigned','progress','pending','closed') DEFAULT 'open',
+    sla_due_date DATETIME NULL,
+    sla_status  ENUM('ok','warning','breached') NOT NULL DEFAULT 'ok',
     description TEXT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
