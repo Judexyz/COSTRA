@@ -57,7 +57,7 @@ $count_stmt->close();
 
 $sql = "SELECT
     t.id, t.ticket_no, t.status, t.priority, t.severity, t.description, t.created_at,
-    t.asset_id, t.client_id, t.user_id, t.sla_due_date, t.sla_status,
+    t.asset_id, t.client_id, t.user_id,
     a.name  AS asset_name,
     a.asset_code,
     cl.name AS client_name,
