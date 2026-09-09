@@ -6,7 +6,7 @@ const pages = [
   { file: 'maintenance-report.html', title: 'Maintenance Report' },
   { file: 'service-request-report.html', title: 'Service Request Report' },
   { file: 'attendance-report.html', title: 'User Attendance Report' },
-  { file: 'attendance.html', title: 'Attendance' },
+  // skipping attendance.html since it's already customized
   { file: 'shift.html', title: 'Shift Management' },
   { file: 'overtime.html', title: 'Overtime' },
   { file: 'leave.html', title: 'On Leave (Sick/Leave)' },
@@ -20,6 +20,7 @@ const template = (title) => `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>COSTRA - ${title}</title>
   <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
   <link rel="stylesheet" href="../css/pages.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
