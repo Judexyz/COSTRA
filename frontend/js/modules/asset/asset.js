@@ -105,7 +105,7 @@ const AssetPage = {
     if (!photoPath) {
       return `<div class="asset-thumb-placeholder" style="width:160px;height:160px;min-width:160px;min-height:160px;border-radius:10px;background:#f1f5f9;border:1px solid #e2e8f0;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:2rem;"><i class="fa-regular fa-image"></i></div>`;
     }
-    const fullUrl = `${window.location.origin}/Project%20A/${photoPath}`;
+    const fullUrl = `${window.location.origin}/${photoPath}`;
     return `<div class="asset-photo-wrap" style="width:160px;height:160px;min-width:160px;min-height:160px;border-radius:10px;overflow:hidden;border:1px solid #e2e8f0;cursor:pointer;flex-shrink:0;" onclick="AssetPage.openPreview('${fullUrl}')" title="Klik untuk memperbesar">
       <img src="${fullUrl}" alt="Foto Asset" style="width:100%;height:100%;object-fit:cover;object-position:center;display:block;max-width:none;" />
     </div>`;

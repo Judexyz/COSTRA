@@ -58,7 +58,7 @@ const AssetBrandPage = {
     if (!photoPath) {
       return `<div class="brand-logo-placeholder"><i class="fa-solid fa-image"></i></div>`;
     }
-    const fullUrl = `${window.location.origin}/Project%20A/${photoPath}`;
+    const fullUrl = `${window.location.origin}/${photoPath}`;
     return `<div class="brand-logo-wrap" onclick="AssetBrandPage.openPreview('${fullUrl}')" title="Klik untuk memperbesar">
       <img src="${fullUrl}" alt="Logo Brand" />
     </div>`;

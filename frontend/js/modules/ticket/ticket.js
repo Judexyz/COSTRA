@@ -418,7 +418,7 @@ const TicketPage = {
       list.innerHTML = data.data.map(c => {
         let attach = '';
         if (c.file_path) {
-          attach = `<div style="margin-top:8px;"><a href="/Project%20A/${c.file_path}" target="_blank" style="font-size:0.8rem; color:var(--primary-600);"><i class="fa-solid fa-paperclip"></i> ${c.file_name}</a></div>`;
+          attach = `<div style="margin-top:8px;"><a href="/${c.file_path}" target="_blank" style="font-size:0.8rem; color:var(--primary-600);"><i class="fa-solid fa-paperclip"></i> ${c.file_name}</a></div>`;
         }
         return `
           <div style="background:var(--gray-50); padding:10px 15px; border-radius:8px; border:1px solid var(--gray-200);">

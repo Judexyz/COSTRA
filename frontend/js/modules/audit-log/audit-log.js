@@ -27,7 +27,7 @@ const AuditLogPage = {
     const token = Storage.getToken();
     const search = document.getElementById('searchInput').value;
     
-    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+    const BASE_URL = window.location.origin + '/backend/api';
     try {
       const response = await fetch(`${BASE_URL}/audit/get.php?page=${this.currentPage}&limit=${this.limit}&search=${encodeURIComponent(search)}`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -114,7 +114,7 @@ const AuditLogPage = {
   async clearLogs() {
     if (!confirm('PERINGATAN: Anda yakin ingin menghapus seluruh riwayat Audit Log? Tindakan ini tidak dapat dibatalkan.')) return;
 
-    const BASE_URL = window.location.origin + '/Project%20A/backend/api';
+    const BASE_URL = window.location.origin + '/backend/api';
     try {
       const res = await fetch(`${BASE_URL}/audit/clear.php`, {
         method: 'POST',
