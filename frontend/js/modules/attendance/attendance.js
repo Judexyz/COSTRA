@@ -12,17 +12,36 @@ const AttendancePage = {
     const popover = document.getElementById('customMonthPickerPopover');
     if (!btn || !popover) return;
     
-    // Default hidden
+    const title = document.getElementById('pickerTitle');
+    const monthGrid = document.getElementById('pickerMonthGrid');
+    const yearGrid = document.getElementById('pickerYearGrid');
+    
+    let selectedMonth = 'September';
+    let selectedYear = '2026';
+
+    // Populate years
+    let yearsHtml = '';
+    for (let y = 2020; y <= 2030; y++) {
+      yearsHtml += `<div data-year="${y}" style="cursor: pointer; padding: 0.375rem 0; font-size: 0.875rem; color: var(--gray-700);">${y}</div>`;
+    }
+    if (yearGrid) yearGrid.innerHTML = yearsHtml;
+
     popover.style.display = 'none';
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const isVisible = popover.style.display === 'block';
-      popover.style.display = isVisible ? 'none' : 'block';
+      
+      // Reset view to month grid when opening
       if (!isVisible) {
+        monthGrid.style.display = 'grid';
+        yearGrid.style.display = 'none';
+        title.innerText = 'Select Month';
         btn.style.borderColor = '#0284c7';
         btn.querySelector('label').style.color = '#0284c7';
+        popover.style.display = 'block';
       } else {
+        popover.style.display = 'none';
         btn.style.borderColor = 'var(--gray-300)';
         btn.querySelector('label').style.color = 'var(--gray-500)';
       }
@@ -37,40 +56,56 @@ const AttendancePage = {
     });
 
     // Handle month selection
-    const grid = popover.children[1];
-    if (grid) {
-      const monthDivs = grid.querySelectorAll('div');
+    if (monthGrid) {
+      const monthDivs = monthGrid.querySelectorAll('div');
       monthDivs.forEach(div => {
         div.addEventListener('click', (e) => {
           e.stopPropagation();
-          // Reset all
           monthDivs.forEach(d => {
             d.style.backgroundColor = 'transparent';
             d.style.color = 'var(--gray-700)';
           });
-          // Highlight selected
           div.style.backgroundColor = '#0284c7';
           div.style.color = 'white';
           div.style.borderRadius = '9999px';
           
-          // Update button text
-          const monthText = div.innerText;
-          const displayEl = btn.querySelector('div');
-          if (displayEl) {
-            displayEl.innerText = monthText + ' 2026';
-          }
+          selectedMonth = div.getAttribute('data-month');
           
-          // Update popover header text
-          const headerText = popover.querySelector('span');
-          if (headerText) {
-            headerText.innerText = monthText + ' 2026';
+          // Switch to year view
+          monthGrid.style.display = 'none';
+          yearGrid.style.display = 'grid';
+          title.innerText = 'Select Year';
+        });
+      });
+    }
+
+    // Handle year selection
+    if (yearGrid) {
+      yearGrid.addEventListener('click', (e) => {
+        if (e.target.tagName === 'DIV') {
+          e.stopPropagation();
+          const yearDivs = yearGrid.querySelectorAll('div');
+          yearDivs.forEach(d => {
+            d.style.backgroundColor = 'transparent';
+            d.style.color = 'var(--gray-700)';
+          });
+          e.target.style.backgroundColor = '#0284c7';
+          e.target.style.color = 'white';
+          e.target.style.borderRadius = '9999px';
+          
+          selectedYear = e.target.getAttribute('data-year');
+          
+          // Update button text
+          const displayEl = btn.querySelector('div:nth-child(2)');
+          if (displayEl) {
+            displayEl.innerText = `${selectedMonth} ${selectedYear}`;
           }
 
           // Close popover
           popover.style.display = 'none';
           btn.style.borderColor = 'var(--gray-300)';
           btn.querySelector('label').style.color = 'var(--gray-500)';
-        });
+        }
       });
     }
   },
