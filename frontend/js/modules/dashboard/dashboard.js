@@ -7,13 +7,25 @@ const DashboardPage = {
     try { if (typeof Sidebar !== 'undefined') Sidebar.init(); } catch (e) { console.warn('Sidebar init error:', e); }
     try { if (typeof Topbar !== 'undefined') Topbar.init(); } catch (e) { console.warn('Topbar init error:', e); }
     
-    this.updateTitle();
-    this.loadStats();
-    this.loadRecentTickets();
+    const currentModule = Storage.getModule();
+    const ccDashboard = document.getElementById('costControlDashboard');
+    const hdDashboard = document.getElementById('helpdeskDashboard');
+
+    if (currentModule === 'helpdesk') {
+      if (ccDashboard) ccDashboard.style.display = 'none';
+      if (hdDashboard) hdDashboard.style.display = 'block';
+      this.initHelpdeskCharts();
+    } else {
+      if (hdDashboard) hdDashboard.style.display = 'none';
+      if (ccDashboard) ccDashboard.style.display = 'block';
+      this.updateTitle();
+      this.loadStats();
+      this.loadRecentTickets();
+    }
   },
 
   updateTitle() {
-    const subtitle = document.querySelector('.page-subtitle');
+    const subtitle = document.querySelector('#costControlDashboard .page-subtitle');
     if (!subtitle) return;
     const currentModule = Storage.getModule();
     if (currentModule === 'cost_control') {
@@ -21,7 +33,7 @@ const DashboardPage = {
     } else if (currentModule === 'hr') {
       subtitle.textContent = 'HR Dashboard';
     } else {
-      subtitle.textContent = 'Helpdesk Dashboard';
+      subtitle.textContent = 'Dashboard';
     }
   },
 
@@ -297,6 +309,151 @@ const DashboardPage = {
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#039;');
+  },
+
+  initHelpdeskCharts() {
+    this.renderHdSrLineChart();
+    this.renderHdSrLevelPieChart();
+    this.renderHdSlaDoughnut();
+    this.renderHdSrStatusLine();
+    this.renderHdIncLine();
+    this.renderHdSlaLine();
+    this.renderHdGauge('gauge1', 0);
+    this.renderHdGauge('gauge2', 0);
+    this.renderHdGauge('gauge3', 0);
+    this.renderHdGauge('gauge4', 0);
+    this.renderHdGauge('gauge5', 0);
+    this.renderHdGauge('gauge6', 0);
+    this.renderHdGauge('gaugeL1', 0, '#0ea5e9');
+    this.renderHdGauge('gaugeL2', 0, '#10b981');
+    this.renderHdGauge('gaugeL3', 0, '#ef4444');
+  },
+
+  renderHdSrLineChart() {
+    const ctx = document.getElementById('hdSrLineChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['2026 Sep 03', '2026 Sep 04', '2026 Sep 05', '2026 Sep 06', '2026 Sep 07', '2026 Sep 08', '2026 Sep 09'],
+        datasets: [
+          { label: 'Open', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#10b981', tension: 0.1, borderWidth: 2 },
+          { label: 'Pending', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#f59e0b', tension: 0.1, borderWidth: 2 },
+          { label: 'Closed', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#ef4444', tension: 0.1, borderWidth: 2 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { min: 0, max: 2, ticks: { stepSize: 0.5 } }
+        }
+      }
+    });
+  },
+
+  renderHdSrLevelPieChart() {
+    const ctx = document.getElementById('hdSrLevelPieChart');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['L1', 'L2', 'L3'],
+        datasets: [{ data: [0.1, 0.1, 0.1], backgroundColor: ['#0ea5e9', '#10b981', '#ef4444'], borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '80%',
+        plugins: { legend: { display: false }, tooltip: { enabled: false } }
+      }
+    });
+  },
+
+  renderHdSlaDoughnut() {
+    const ctx = document.getElementById('hdSlaDoughnut');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{ data: [1], backgroundColor: ['#e2e8f0'], borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '85%',
+        plugins: { tooltip: { enabled: false } }
+      },
+      plugins: [{
+        id: 'textCenter',
+        beforeDraw: function(chart) {
+          var width = chart.width, height = chart.height, ctx = chart.ctx;
+          ctx.restore();
+          var fontSize = (height / 8).toFixed(2);
+          ctx.font = "bold " + fontSize + "px Inter";
+          ctx.textBaseline = "middle";
+          var text = "0 Hours",
+              textX = Math.round((width - ctx.measureText(text).width) / 2),
+              textY = height / 2;
+          ctx.fillText(text, textX, textY);
+          ctx.save();
+        }
+      }]
+    });
+  },
+
+  renderHdSrStatusLine() {
+    const ctx = document.getElementById('hdSrStatusLine');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['2026 Sep 03', '2026 Sep 04', '2026 Sep 05', '2026 Sep 06', '2026 Sep 07', '2026 Sep 08', '2026 Sep 09'],
+        datasets: [
+          { label: 'Open', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#10b981', tension: 0.1, borderWidth: 2 },
+          { label: 'Pending', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#f59e0b', tension: 0.1, borderWidth: 2 },
+          { label: 'Closed', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#ef4444', tension: 0.1, borderWidth: 2 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 2, ticks: { stepSize: 0.5 } } } }
+    });
+  },
+
+  renderHdIncLine() {
+    const ctx = document.getElementById('hdIncLine');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Sep 03', 'Sep 04', 'Sep 05', 'Sep 06', 'Sep 07', 'Sep 08', 'Sep 09'],
+        datasets: [{ label: 'Incidents', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#0ea5e9', tension: 0.1, borderWidth: 2 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 2, ticks: { stepSize: 0.5 } } } }
+    });
+  },
+
+  renderHdSlaLine() {
+    const ctx = document.getElementById('hdSlaLine');
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Sep 03', 'Sep 04', 'Sep 05', 'Sep 06', 'Sep 07', 'Sep 08', 'Sep 09'],
+        datasets: [{ label: 'SLA', data: [0, 0, 0, 0, 0, 0, 0], borderColor: '#10b981', tension: 0.1, borderWidth: 2 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { min: 0, max: 2, ticks: { stepSize: 0.5 } } } }
+    });
+  },
+
+  renderHdGauge(id, value, color = '#ef4444') {
+    const ctx = document.getElementById(id);
+    if (!ctx) return;
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{ data: [1], backgroundColor: ['#e2e8f0'], borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '85%', rotation: 270, circumference: 180,
+        plugins: { tooltip: { enabled: false } }
+      }
+    });
   }
 };
 

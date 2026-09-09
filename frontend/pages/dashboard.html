@@ -123,15 +123,16 @@
     </header>
 
     <main class="page-content">
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">COSTRA</h1>
-          <p class="page-subtitle">Cost Control Dashboard</p>
+      <div id="costControlDashboard" style="display: none;">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">COSTRA</h1>
+            <p class="page-subtitle">Cost Control Dashboard</p>
+          </div>
+          <button class="btn btn-primary" onclick="window.location.href='ticket.html'">
+            <i class="fa-solid fa-plus"></i> Buat Tiket
+          </button>
         </div>
-        <button class="btn btn-primary" onclick="window.location.href='ticket.html'">
-          <i class="fa-solid fa-plus"></i> Buat Tiket
-        </button>
-      </div>
 
       <!-- Stats Grid (6 Cards) -->
       <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
@@ -227,8 +228,291 @@
           </table>
         </div>
       </div>
-      
-    </main>
+      </div>
+
+      <!-- Helpdesk Dashboard -->
+      <div id="helpdeskDashboard" style="display: none;">
+        <div class="hd-header">
+          <h1 class="hd-title">Hi, Welcome back 👋 <i class="fa-solid fa-circle-info hd-info-icon"></i></h1>
+        </div>
+
+        <!-- Row 1: SR Stats & SR Level -->
+        <div class="hd-grid-row-1">
+          <div class="card">
+            <div class="card-header hd-header-flex">
+              <div>
+                <h3 class="card-title">Service Request Statistics</h3>
+                <p class="hd-subtitle">Daily statistics (Open - Waiting Spare part - Close)</p>
+              </div>
+              <div class="hd-filters">
+                <select class="hd-select"><option>Site</option></select>
+                <div class="hd-filter-group">
+                  <label>Type</label>
+                  <select class="hd-select"><option>Daily</option></select>
+                </div>
+                <div class="hd-filter-group">
+                  <label>Date</label>
+                  <input type="date" class="hd-input" value="2026-09-03" />
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="hd-legend">
+                <div class="hd-legend-item"><span class="hd-dot" style="background:var(--success)"></span>Total Open<br><strong id="hdSrOpen">0</strong></div>
+                <div class="hd-legend-item"><span class="hd-dot" style="background:var(--warning)"></span>Total Pending<br><strong id="hdSrPending">0</strong></div>
+                <div class="hd-legend-item"><span class="hd-dot" style="background:var(--danger)"></span>Total Closed<br><strong id="hdSrClosed">0</strong></div>
+              </div>
+              <div class="chart-container" style="height:250px;"><canvas id="hdSrLineChart"></canvas></div>
+              <div class="hd-refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header hd-header-flex">
+              <div>
+                <h3 class="card-title">Service Request Level Percentage</h3>
+                <p class="hd-subtitle">Total <strong id="hdSrTotal">0</strong> service requests</p>
+              </div>
+              <select class="hd-select"><option>Site</option></select>
+            </div>
+            <div class="card-body" style="display:flex; flex-direction:column; align-items:center;">
+              <div class="hd-legend hd-legend-center" style="margin-bottom:20px;">
+                <div class="hd-legend-item"><span class="hd-dot" style="background:#0ea5e9"></span>L1</div>
+                <div class="hd-legend-item"><span class="hd-dot" style="background:var(--success)"></span>L2</div>
+                <div class="hd-legend-item"><span class="hd-dot" style="background:var(--danger)"></span>L3</div>
+              </div>
+              <div class="chart-container" style="height:180px; width:100%;"><canvas id="hdSrLevelPieChart"></canvas></div>
+              <div class="hd-refresh" style="margin-top:auto;"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2: Event Incident & SLA & Top Tech -->
+        <div class="hd-grid-row-2">
+          <div class="card">
+            <div class="card-header hd-header-flex">
+              <div><h3 class="card-title">Event</h3><p class="hd-subtitle">Incident</p></div>
+              <select class="hd-select"><option>Site</option></select>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <div class="hd-accordion">
+                <div class="hd-acc-item"><i class="fa-solid fa-house"></i> Asset <i class="fa-solid fa-chevron-down hd-acc-arrow"></i></div>
+                <div class="hd-acc-item"><i class="fa-solid fa-box"></i> Module <i class="fa-solid fa-chevron-down hd-acc-arrow"></i></div>
+                <div class="hd-acc-item"><i class="fa-solid fa-wrench"></i> Component <i class="fa-solid fa-chevron-down hd-acc-arrow"></i></div>
+              </div>
+              <div class="hd-refresh" style="padding:15px;"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">SLA Average</h3>
+              <p class="hd-subtitle">Service request time history</p>
+            </div>
+            <div class="card-body" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <div class="chart-container" style="height:150px; width:150px; margin: 10px 0;"><canvas id="hdSlaDoughnut"></canvas></div>
+              <div class="hd-refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header hd-header-flex">
+              <div class="hd-table-actions">
+                <i class="fa-solid fa-table-cells"></i> <i class="fa-solid fa-filter"></i> <i class="fa-solid fa-download"></i> <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table class="hd-table">
+                <thead><tr><th>Top 5 L1 Technician Name</th><th>Handled Service R...</th></tr></thead>
+                <tbody><tr><td colspan="2" style="text-align:center; padding: 40px;">No rows</td></tr></tbody>
+              </table>
+              <div class="hd-refresh" style="padding:15px; border-top:1px solid var(--gray-100);"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Summary Cards -->
+        <div class="hd-grid-row-3">
+          <div class="hd-summary-card active">
+            <div class="hd-sum-header">
+              <div><h4>MINUS</h4><p>ducimus</p></div>
+              <i class="fa-solid fa-plane"></i>
+            </div>
+            <div class="hd-sum-body">
+              <div class="hd-sum-col"><span>Service Request</span><strong>0</strong></div>
+              <div class="hd-sum-stats">
+                <div>Open <span>: 0</span></div>
+                <div>Pending <span>: 0</span></div>
+                <div>Close <span>: 0</span></div>
+              </div>
+            </div>
+            <div class="hd-sum-footer">Incident : <strong>0</strong></div>
+          </div>
+
+          <div class="hd-summary-card">
+            <div class="hd-sum-header">
+              <div><h4>OFFICIIS</h4><p>officiis</p></div>
+              <i class="fa-solid fa-plane"></i>
+            </div>
+            <div class="hd-sum-body">
+              <div class="hd-sum-col"><span>Service Request</span><strong>0</strong></div>
+              <div class="hd-sum-stats">
+                <div>Open <span>: 0</span></div>
+                <div>Pending <span>: 0</span></div>
+                <div>Close <span>: 0</span></div>
+              </div>
+            </div>
+            <div class="hd-sum-footer">Incident : <strong>0</strong></div>
+          </div>
+          
+          <div class="hd-summary-card">
+            <div class="hd-sum-header">
+              <div><h4>DOLORUM</h4><p>rerum</p></div>
+              <i class="fa-solid fa-plane"></i>
+            </div>
+            <div class="hd-sum-body">
+              <div class="hd-sum-col"><span>Service Request</span><strong>0</strong></div>
+              <div class="hd-sum-stats">
+                <div>Open <span>: 0</span></div>
+                <div>Pending <span>: 0</span></div>
+                <div>Close <span>: 0</span></div>
+              </div>
+            </div>
+            <div class="hd-sum-footer">Incident : <strong>0</strong></div>
+          </div>
+          
+          <div class="hd-summary-card">
+            <div class="hd-sum-header">
+              <div><h4>NOBIS</h4><p>molestias</p></div>
+            </div>
+            <div class="hd-sum-body">
+              <div class="hd-sum-col"><span>Service Request</span><strong>0</strong></div>
+            </div>
+            <div class="hd-sum-footer">Incident : <strong>0</strong></div>
+          </div>
+        </div>
+        
+        <!-- Row 4: SR Status Line & Incident Line -->
+        <div class="hd-grid-row-4">
+          <div class="card">
+            <div class="card-header hd-header-flex">
+              <div><h3 class="card-title">Service Request Status</h3><p class="hd-subtitle">Daily statistics (Open - Waiting Spare part - Close)</p></div>
+              <div class="hd-filters">
+                <div class="hd-filter-group"><label>Type</label><select class="hd-select"><option>Daily</option></select></div>
+                <div class="hd-filter-group"><label>Date</label><input type="date" class="hd-input" value="2026-09-03" /></div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="hd-legend">
+                <div class="hd-legend-item"><span class="hd-dot" style="background:var(--success)"></span>Total Open<br><strong>0</strong></div>
+                <div class="hd-legend-item"><span class="hd-dot" style="background:var(--warning)"></span>Total Pending<br><strong>0</strong></div>
+                <div class="hd-legend-item"><span class="hd-dot" style="background:var(--danger)"></span>Total Closed<br><strong>0</strong></div>
+              </div>
+              <div class="chart-container" style="height:250px;"><canvas id="hdSrStatusLine"></canvas></div>
+              <div class="hd-refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header hd-header-flex">
+              <div><h3 class="card-title">Incident Total</h3><p class="hd-subtitle">Daily Incident Total Statistics</p></div>
+              <div class="hd-filters">
+                <div class="hd-filter-group"><label>Type</label><select class="hd-select"><option>Daily</option></select></div>
+                <div class="hd-filter-group"><label>Date</label><input type="date" class="hd-input" value="2026-09-03" /></div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:300px;"><canvas id="hdIncLine"></canvas></div>
+              <div class="hd-refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 5: SLA Line & Gauges -->
+        <div class="hd-grid-row-5">
+          <div class="card">
+            <div class="card-header hd-header-flex">
+              <div><h3 class="card-title">SLA Average</h3><p class="hd-subtitle">Daily SLA Average (Hours) Statistics</p></div>
+              <div class="hd-filters">
+                <div class="hd-filter-group"><label>Type</label><select class="hd-select"><option>Daily</option></select></div>
+                <div class="hd-filter-group"><label>Date</label><input type="date" class="hd-input" value="2026-09-03" /></div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container" style="height:250px;"><canvas id="hdSlaLine"></canvas></div>
+              <div class="hd-refresh"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+            </div>
+          </div>
+          
+          <div class="hd-gauge-col">
+            <div class="card">
+              <div class="card-header hd-header-flex">
+                <div><h3 class="card-title">Service Request Event</h3><p class="hd-subtitle">Service Request Event Total</p></div>
+                <div class="hd-refresh" style="text-align:right;"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+              </div>
+              <div class="card-body hd-gauge-flex">
+                <div class="hd-gauge"><canvas id="gauge1"></canvas><div class="hd-gauge-label" style="color:var(--danger)">Asset<br>0 Total</div></div>
+                <div class="hd-gauge"><canvas id="gauge2"></canvas><div class="hd-gauge-label" style="color:var(--danger)">Module<br>0 Total</div></div>
+                <div class="hd-gauge"><canvas id="gauge3"></canvas><div class="hd-gauge-label" style="color:var(--danger)">Component<br>0 Total</div></div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header hd-header-flex">
+                <div><h3 class="card-title">Incident Event</h3><p class="hd-subtitle">0 Total Incidents</p></div>
+                <div class="hd-refresh" style="text-align:right;"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+              </div>
+              <div class="card-body hd-gauge-flex">
+                <div class="hd-gauge"><canvas id="gauge4"></canvas><div class="hd-gauge-label" style="color:var(--danger)">Asset<br>0 Total</div></div>
+                <div class="hd-gauge"><canvas id="gauge5"></canvas><div class="hd-gauge-label" style="color:var(--danger)">Module<br>0 Total</div></div>
+                <div class="hd-gauge"><canvas id="gauge6"></canvas><div class="hd-gauge-label" style="color:var(--danger)">Component<br>0 Total</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 6: Technician/SR Level & Spare Parts Table -->
+        <div class="hd-grid-row-6">
+          <div class="hd-tech-col">
+            <div class="hd-blue-card">
+              <div class="hd-blue-header">
+                <i class="fa-solid fa-user-check" style="font-size:2rem;"></i>
+                <div class="hd-refresh" style="color:white; opacity:0.8;"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+              </div>
+              <div class="hd-blue-title">Number of Stand By Technicians</div>
+              <div class="hd-blue-val">0</div>
+            </div>
+            <div class="card" style="flex:1;">
+              <div class="card-header hd-header-flex">
+                <div><h3 class="card-title">Service Request Level</h3><p class="hd-subtitle">Service Request Level Total</p></div>
+                <div class="hd-refresh" style="text-align:right;"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+              </div>
+              <div class="card-body hd-gauge-flex" style="padding-top:10px;">
+                <div class="hd-gauge"><canvas id="gaugeL1"></canvas><div class="hd-gauge-label" style="color:#0ea5e9">L1<br>0 Total</div></div>
+                <div class="hd-gauge"><canvas id="gaugeL2"></canvas><div class="hd-gauge-label" style="color:var(--success)">L2<br>0 Total</div></div>
+                <div class="hd-gauge"><canvas id="gaugeL3"></canvas><div class="hd-gauge-label" style="color:var(--danger)">L3<br>0 Total</div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header hd-header-flex">
+              <div class="hd-table-actions" style="margin-left:auto;">
+                <i class="fa-solid fa-table-cells"></i> <i class="fa-solid fa-filter"></i> <i class="fa-solid fa-download"></i> <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table class="hd-table">
+                <thead><tr><th>Spare Part Name</th><th>Site</th><th>Available Stock</th></tr></thead>
+                <tbody>
+                  <tr><td style="color:var(--gray-900);">ut</td><td>ducimus</td><td>97</td></tr>
+                  <tr><td style="color:var(--gray-900);">quis</td><td>ducimus</td><td>34</td></tr>
+                </tbody>
+              </table>
+              <div class="hd-refresh" style="padding:15px; text-align:right; border-top:1px solid var(--gray-100);"><i class="fa-solid fa-arrows-rotate"></i> Refresh Data</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
   </div>
 
   <div class="toast-container" id="toastContainer"></div>
