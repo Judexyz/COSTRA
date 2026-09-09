@@ -57,31 +57,22 @@ const ShiftPage = {
     const tbody = document.getElementById('userShiftBody');
     if (!headRow || !tbody) return;
 
-    // We will generate headers from 2026-09-01 to 2026-09-30
+    // We will generate headers from 2026-09-01 to 2026-09-06 for empty state (or 30, but mock empty state just shows a few)
     let headersHtml = '<th class="sticky-col">User Name</th>';
-    const dates = [];
-    for (let i = 1; i <= 30; i++) {
+    for (let i = 1; i <= 6; i++) {
       const dateStr = `2026-09-${i.toString().padStart(2, '0')}`;
-      dates.push(dateStr);
       headersHtml += `<th>${dateStr}</th>`;
     }
     headRow.innerHTML = headersHtml;
 
-    // Mock Users
-    const users = ['Jude', 'Yashir', 'Jimbo'];
-    let bodyHtml = '';
-
-    users.forEach(user => {
-      bodyHtml += `<tr>`;
-      bodyHtml += `<td class="sticky-col">${this.escapeHtml(user)}</td>`;
-      // Generate empty data for dates (or default shift code like P)
-      dates.forEach(() => {
-        bodyHtml += `<td>-</td>`;
-      });
-      bodyHtml += `</tr>`;
-    });
-
-    tbody.innerHTML = bodyHtml;
+    // Empty state
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="31" style="text-align: center; padding: 4rem 1rem; color: var(--gray-800); background: #f8fafc;">
+          Please select site or user to see data
+        </td>
+      </tr>
+    `;
   },
 
   renderCategoryTable() {
