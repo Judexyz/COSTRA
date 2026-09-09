@@ -3,41 +3,43 @@ const Sidebar = {
   menus: {
     helpdesk: [
       {
-        section: 'Main',
+        section: 'OVERVIEW',
         items: [
-          { id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge', page: 'dashboard.html' }
+          { id: 'analytics', label: 'Analytics', icon: 'fa-chart-pie', page: 'dashboard.html' }
         ]
       },
       {
-        section: 'Master Data',
+        section: 'USER MANAGEMENT',
         items: [
-          {
-            id: 'master', label: 'Master Data', icon: 'fa-database',
-            children: [
-              { id: 'asset-category', label: 'Asset Category', page: 'asset-category.html' },
-              { id: 'asset-brand',    label: 'Asset Brand',    page: 'asset-brand.html' },
-              { id: 'client',         label: 'Client',          page: 'client.html' },
-              { id: 'cause',          label: 'Cause',           page: 'cause.html' },
-              { id: 'impact',         label: 'Impact',          page: 'impact.html' }
-            ]
-          }
+          { id: 'users', label: 'User', icon: 'fa-user', page: 'users.html' },
+          { id: 'roles', label: 'Role', icon: 'fa-key', page: 'roles.html' }
         ]
       },
       {
-        section: 'Operations',
+        section: 'MANAGEMENT',
         items: [
           { id: 'asset',           label: 'Asset',           icon: 'fa-box-archive',        page: 'asset.html' },
-          { id: 'ticket',          label: 'Ticket',          icon: 'fa-ticket',             page: 'ticket.html' },
-          { id: 'incident',        label: 'Incident',        icon: 'fa-triangle-exclamation', page: 'incident.html' },
-          { id: 'service-request', label: 'Service Request', icon: 'fa-file-circle-plus',   page: 'service-request.html' }
+          { id: 'incident',        label: 'Incident',        icon: 'fa-flag',               page: 'incident.html' },
+          { id: 'service-request', label: 'Service Request', icon: 'fa-hammer',             page: 'service-request.html' },
+          { id: 'maintenance',     label: 'Maintenance',     icon: 'fa-screwdriver-wrench', page: 'maintenance.html' }
         ]
       },
       {
-        section: 'System',
+        section: 'ATTENDANCE MANAGEMENT',
         items: [
-          { id: 'users',     label: 'Users',     icon: 'fa-users',          page: 'users.html' },
-          { id: 'audit-log', label: 'Audit Log', icon: 'fa-clock-rotate-left', page: 'audit-log.html' },
-          { id: 'backups',   label: 'Backups',   icon: 'fa-box-archive',    page: 'backups.html' }
+          { id: 'attendance', label: 'Attendance',       icon: 'fa-address-card', page: 'attendance.html' },
+          { id: 'shift',      label: 'Shift Management', icon: 'fa-calendar-days', page: 'shift.html' },
+          { id: 'overtime',   label: 'Overtime',         icon: 'fa-clock',        page: 'overtime.html' },
+          { id: 'leave',      label: 'On Leave (Sick/Leave)', icon: 'fa-user-injured', page: 'leave.html' }
+        ]
+      },
+      {
+        section: 'REPORT MANAGEMENT',
+        items: [
+          { id: 'incident-report',   label: 'Incident Report',   icon: 'fa-flag', page: 'incident-report.html' },
+          { id: 'maintenance-report',label: 'Maintenance Report',icon: 'fa-flag', page: 'maintenance-report.html' },
+          { id: 'sr-report',         label: 'Service Request Report', icon: 'fa-flag', page: 'service-request-report.html' },
+          { id: 'attendance-report', label: 'User Attendance Report', icon: 'fa-flag', page: 'attendance-report.html' }
         ]
       }
     ],
