@@ -188,5 +188,33 @@ if ($db->query($sql)->num_rows === 0) {
     echo "Cost column already exists in maintenance table.\n";
 }
 
+// 11. Pastikan kolom cause_id dan impact_id ada di incidents
+$sql = "SHOW COLUMNS FROM incidents LIKE 'cause_id'";
+if ($db->query($sql)->num_rows === 0) {
+    $db->query("ALTER TABLE incidents ADD COLUMN cause_id INT NULL AFTER user_id");
+    $db->query("ALTER TABLE incidents ADD FOREIGN KEY (cause_id) REFERENCES causes(id)");
+    echo "Added cause_id to incidents table.\n";
+}
+$sql = "SHOW COLUMNS FROM incidents LIKE 'impact_id'";
+if ($db->query($sql)->num_rows === 0) {
+    $db->query("ALTER TABLE incidents ADD COLUMN impact_id INT NULL AFTER cause_id");
+    $db->query("ALTER TABLE incidents ADD FOREIGN KEY (impact_id) REFERENCES impacts(id)");
+    echo "Added impact_id to incidents table.\n";
+}
+
+// 12. Pastikan kolom cause_id dan impact_id ada di service_requests
+$sql = "SHOW COLUMNS FROM service_requests LIKE 'cause_id'";
+if ($db->query($sql)->num_rows === 0) {
+    $db->query("ALTER TABLE service_requests ADD COLUMN cause_id INT NULL AFTER user_id");
+    $db->query("ALTER TABLE service_requests ADD FOREIGN KEY (cause_id) REFERENCES causes(id)");
+    echo "Added cause_id to service_requests table.\n";
+}
+$sql = "SHOW COLUMNS FROM service_requests LIKE 'impact_id'";
+if ($db->query($sql)->num_rows === 0) {
+    $db->query("ALTER TABLE service_requests ADD COLUMN impact_id INT NULL AFTER cause_id");
+    $db->query("ALTER TABLE service_requests ADD FOREIGN KEY (impact_id) REFERENCES impacts(id)");
+    echo "Added impact_id to service_requests table.\n";
+}
+
 echo "Database upgrade complete.\n";
 $db->close();
