@@ -47,3 +47,17 @@ INSERT INTO asset_brands (name) VALUES
 INSERT INTO clients (name, email, phone, address) VALUES
 ('PT Himawari Digi', 'info@himawaridigi.com', '021-12345678', 'Jakarta Selatan'),
 ('PT Maju Bersama', 'info@majubersama.com', '021-87654321', 'Jakarta Pusat');
+
+#sample causes
+INSERT INTO causes (name, description) VALUES
+('Human Error', 'Kesalahan yang disebabkan oleh kelalaian pengguna'),
+('Hardware Failure', 'Kerusakan pada perangkat keras'),
+('Software Bug', 'Kesalahan pada program atau aplikasi'),
+('Power Outage', 'Pemadaman listrik yang menyebabkan gangguan sistem');
+
+#sample impacts
+INSERT INTO impacts (name, description) VALUES
+('Low', 'Dampak kecil, tidak mengganggu operasional'),
+('Medium', 'Dampak sedang, mengganggu sebagian operasional'),
+('High', 'Dampak besar, menghentikan operasional utama'),
+('Critical', 'Dampak kritis, menyebabkan kerugian signifikan');

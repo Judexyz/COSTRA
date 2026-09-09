@@ -68,6 +68,26 @@ CREATE TABLE clients (
     deleted_at  TIMESTAMP NULL DEFAULT NULL
 );
 
+#causes
+CREATE TABLE causes (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL
+);
+
+#impacts
+CREATE TABLE impacts (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL
+);
+
 #assets
 CREATE TABLE assets (
     id              INT AUTO_INCREMENT PRIMARY KEY,
@@ -79,6 +99,7 @@ CREATE TABLE assets (
     client_id       INT NULL,
     purchase_date   DATE NULL,
     warranty_exp    DATE NULL,
+    cost            DECIMAL(12,2) NULL,
     serial_number   VARCHAR(100) NULL,
     status          ENUM('active','damaged','maintenance') DEFAULT 'active',
     location        VARCHAR(150) NULL,
