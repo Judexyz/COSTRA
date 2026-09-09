@@ -336,3 +336,11 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 .toast-error   { background: #fef2f2; color: #991b1b; border-left: 4px solid #ef4444; }
 .toast-warning { background: #fffbeb; color: #92400e; border-left: 4px solid #f59e0b; }
 .toast-info    { background: #eff6ff; color: #1e40af; border-left: 4px solid #3b82f6; }
+
+/* Attendance Table */
+.att-table { width: 100%; border-collapse: collapse; }
+.att-table th { background: #e0f2fe; color: #0891b2; font-weight: 600; font-size: 0.8125rem; padding: 1rem 1.5rem; white-space: nowrap; border-bottom: 1px solid var(--gray-200); border-right: 1px solid white; }
+.att-table td { padding: 1rem 1.5rem; font-size: 0.875rem; color: var(--gray-700); border-bottom: 1px solid var(--gray-100); white-space: nowrap; }
+.att-table .sticky-col { position: sticky; left: 0; z-index: 2; background: white; border-right: 1px solid var(--gray-200); }
+.att-table th.sticky-col { background: #e0f2fe; z-index: 3; border-right: 1px solid var(--gray-200); }
+
