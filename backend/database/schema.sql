@@ -16,7 +16,7 @@ CREATE TABLE users (
     name       VARCHAR(100) NOT NULL,
     email      VARCHAR(100) NOT NULL UNIQUE,
     password   VARCHAR(255) NOT NULL,
-    role       ENUM('super_admin','admin','staff') DEFAULT 'staff',
+    role       ENUM('super_admin','admin','staff','technician','client') DEFAULT 'staff',
     avatar     VARCHAR(255) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
