@@ -51,5 +51,132 @@ if ($db->query($sql)) {
 // Update existing tickets to have SLA due dates (defaulting to +48 hours for simplicity)
 $db->query("UPDATE tickets SET sla_due_date = DATE_ADD(created_at, INTERVAL 48 HOUR) WHERE sla_due_date IS NULL");
 
+// 4. Buat tabel causes
+$sql = "CREATE TABLE IF NOT EXISTS causes (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL
+)";
+if ($db->query($sql)) {
+    echo "Table causes is ready.\n";
+} else {
+    echo "Error creating causes: " . $db->error . "\n";
+}
+
+// 5. Buat tabel impacts
+$sql = "CREATE TABLE IF NOT EXISTS impacts (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL
+)";
+if ($db->query($sql)) {
+    echo "Table impacts is ready.\n";
+} else {
+    echo "Error creating impacts: " . $db->error . "\n";
+}
+
+// 6. Buat tabel audit_logs
+$sql = "CREATE TABLE IF NOT EXISTS audit_logs (
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    user_id    INT NULL,
+    action     VARCHAR(50) NOT NULL,
+    module     VARCHAR(50) NOT NULL,
+    detail     TEXT NULL,
+    ip_address VARCHAR(50) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)";
+if ($db->query($sql)) {
+    echo "Table audit_logs is ready.\n";
+} else {
+    echo "Error creating audit_logs: " . $db->error . "\n";
+}
+
+// 7. Buat tabel maintenance (just in case)
+$sql = "CREATE TABLE IF NOT EXISTS maintenance (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    asset_id    INT NULL,
+    user_id     INT NULL,
+    schedule    DATE NOT NULL,
+    status      ENUM('scheduled','in_progress','done','cancelled') DEFAULT 'scheduled',
+    notes       TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (asset_id) REFERENCES assets(id),
+    FOREIGN KEY (user_id)  REFERENCES users(id)
+)";
+if ($db->query($sql)) {
+    echo "Table maintenance is ready.\n";
+} else {
+    echo "Error creating maintenance: " . $db->error . "\n";
+}
+
+// 8. Buat tabel incidents
+$sql = "CREATE TABLE IF NOT EXISTS incidents (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    incident_no VARCHAR(50) NOT NULL UNIQUE,
+    asset_id    INT NULL,
+    client_id   INT NULL,
+    user_id     INT NULL,
+    cause_id    INT NULL,
+    impact_id   INT NULL,
+    priority    ENUM('low','medium','high','critical') DEFAULT 'medium',
+    severity    ENUM('minor','major','critical') DEFAULT 'minor',
+    status      ENUM('open','assigned','progress','pending','closed') DEFAULT 'open',
+    sla_due_date DATETIME NULL,
+    sla_status  ENUM('ok','warning','breached') NOT NULL DEFAULT 'ok',
+    description TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (asset_id)  REFERENCES assets(id),
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (user_id)   REFERENCES users(id),
+    FOREIGN KEY (cause_id)  REFERENCES causes(id),
+    FOREIGN KEY (impact_id) REFERENCES impacts(id)
+)";
+if ($db->query($sql)) {
+    echo "Table incidents is ready.\n";
+} else {
+    echo "Error creating incidents: " . $db->error . "\n";
+}
+
+// 9. Buat tabel service_requests
+$sql = "CREATE TABLE IF NOT EXISTS service_requests (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    sr_no       VARCHAR(50) NOT NULL UNIQUE,
+    asset_id    INT NULL,
+    client_id   INT NULL,
+    user_id     INT NULL,
+    cause_id    INT NULL,
+    impact_id   INT NULL,
+    priority    ENUM('low','medium','high','critical') DEFAULT 'medium',
+    severity    ENUM('minor','major','critical') DEFAULT 'minor',
+    status      ENUM('open','assigned','progress','pending','closed') DEFAULT 'open',
+    sla_due_date DATETIME NULL,
+    sla_status  ENUM('ok','warning','breached') NOT NULL DEFAULT 'ok',
+    description TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (asset_id)  REFERENCES assets(id),
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (user_id)   REFERENCES users(id),
+    FOREIGN KEY (cause_id)  REFERENCES causes(id),
+    FOREIGN KEY (impact_id) REFERENCES impacts(id)
+)";
+if ($db->query($sql)) {
+    echo "Table service_requests is ready.\n";
+} else {
+    echo "Error creating service_requests: " . $db->error . "\n";
+}
+
 echo "Database upgrade complete.\n";
 $db->close();
