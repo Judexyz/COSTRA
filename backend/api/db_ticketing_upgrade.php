@@ -106,6 +106,7 @@ $sql = "CREATE TABLE IF NOT EXISTS maintenance (
     schedule    DATE NOT NULL,
     status      ENUM('scheduled','in_progress','done','cancelled') DEFAULT 'scheduled',
     notes       TEXT NULL,
+    cost        DECIMAL(12,2) NULL DEFAULT 0.00,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at  TIMESTAMP NULL DEFAULT NULL,
@@ -176,6 +177,15 @@ if ($db->query($sql)) {
     echo "Table service_requests is ready.\n";
 } else {
     echo "Error creating service_requests: " . $db->error . "\n";
+}
+
+// 10. Tambahkan kolom cost pada tabel maintenance
+$sql = "SHOW COLUMNS FROM maintenance LIKE 'cost'";
+if ($db->query($sql)->num_rows === 0) {
+    $db->query("ALTER TABLE maintenance ADD COLUMN cost DECIMAL(12,2) NULL DEFAULT 0.00 AFTER notes");
+    echo "Added cost column to maintenance table.\n";
+} else {
+    echo "Cost column already exists in maintenance table.\n";
 }
 
 echo "Database upgrade complete.\n";

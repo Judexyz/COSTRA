@@ -143,6 +143,7 @@ CREATE TABLE maintenance (
     schedule    DATE NOT NULL,
     status      ENUM('scheduled','in_progress','done','cancelled') DEFAULT 'scheduled',
     notes       TEXT NULL,
+    cost        DECIMAL(12,2) NULL DEFAULT 0.00,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at  TIMESTAMP NULL DEFAULT NULL,
@@ -160,4 +161,54 @@ CREATE TABLE audit_logs (
     ip_address VARCHAR(50) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+#incidents
+CREATE TABLE incidents (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    incident_no VARCHAR(50) NOT NULL UNIQUE,
+    asset_id    INT NULL,
+    client_id   INT NULL,
+    user_id     INT NULL,
+    cause_id    INT NULL,
+    impact_id   INT NULL,
+    priority    ENUM('low','medium','high','critical') DEFAULT 'medium',
+    severity    ENUM('minor','major','critical') DEFAULT 'minor',
+    status      ENUM('open','assigned','progress','pending','closed') DEFAULT 'open',
+    sla_due_date DATETIME NULL,
+    sla_status  ENUM('ok','warning','breached') NOT NULL DEFAULT 'ok',
+    description TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (asset_id)  REFERENCES assets(id),
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (user_id)   REFERENCES users(id),
+    FOREIGN KEY (cause_id)  REFERENCES causes(id),
+    FOREIGN KEY (impact_id) REFERENCES impacts(id)
+);
+
+#service_requests
+CREATE TABLE service_requests (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    sr_no       VARCHAR(50) NOT NULL UNIQUE,
+    asset_id    INT NULL,
+    client_id   INT NULL,
+    user_id     INT NULL,
+    cause_id    INT NULL,
+    impact_id   INT NULL,
+    priority    ENUM('low','medium','high','critical') DEFAULT 'medium',
+    severity    ENUM('minor','major','critical') DEFAULT 'minor',
+    status      ENUM('open','assigned','progress','pending','closed') DEFAULT 'open',
+    sla_due_date DATETIME NULL,
+    sla_status  ENUM('ok','warning','breached') NOT NULL DEFAULT 'ok',
+    description TEXT NULL,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at  TIMESTAMP NULL DEFAULT NULL,
+    FOREIGN KEY (asset_id)  REFERENCES assets(id),
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (user_id)   REFERENCES users(id),
+    FOREIGN KEY (cause_id)  REFERENCES causes(id),
+    FOREIGN KEY (impact_id) REFERENCES impacts(id)
 );
