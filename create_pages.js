@@ -1,0 +1,92 @@
+const fs = require('fs');
+const path = require('path');
+
+const pages = [
+  { file: 'incident-report.html', title: 'Incident Report' },
+  { file: 'maintenance-report.html', title: 'Maintenance Report' },
+  { file: 'service-request-report.html', title: 'Service Request Report' },
+  { file: 'attendance-report.html', title: 'User Attendance Report' },
+  { file: 'attendance.html', title: 'Attendance' },
+  { file: 'shift.html', title: 'Shift Management' },
+  { file: 'overtime.html', title: 'Overtime' },
+  { file: 'leave.html', title: 'On Leave (Sick/Leave)' },
+  { file: 'roles.html', title: 'Role Management' }
+];
+
+const template = (title) => `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COSTRA - ${title}</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/pages.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>COSTRA</span>
+      </div>
+      <button class="close-sidebar" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="module-selector">
+      <select id="moduleSelect" class="form-control" style="background-color: var(--primary-700); color: white; border: none; font-weight: 500;">
+        <option value="helpdesk">Helpdesk</option>
+        <option value="cost_control">Cost Control</option>
+        <option value="hr">HR</option>
+      </select>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav"></nav>
+  </aside>
+
+  <div class="main-wrapper" id="mainWrapper">
+    <header class="topbar" id="topbar">
+      <div class="topbar-left">
+        <button class="sidebar-toggle" id="sidebarToggle"><i class="fa-solid fa-bars"></i></button>
+        <div class="breadcrumb" id="breadcrumb">${title}</div>
+      </div>
+      <div class="topbar-right">
+        <button class="topbar-btn" id="logoutBtn" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">${title}</h1>
+          <p class="page-subtitle">Coming soon</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body" style="text-align: center; padding: 4rem 2rem;">
+          <i class="fa-solid fa-person-digging" style="font-size: 4rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+          <h2 style="color: var(--gray-700); margin-bottom: 0.5rem;">Halaman sedang dibangun</h2>
+          <p style="color: var(--gray-500);">Fitur ${title} ini akan segera hadir. Nantikan pembaruannya!</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script>const BASE_URL = window.location.origin + '/backend/api';</script>
+  <script src="../js/utils/storage.js"></script>
+  <script src="../js/shared/toast.js"></script>
+  <script src="../js/shared/sidebar.js"></script>
+  <script src="../js/shared/topbar.js"></script>
+</body>
+</html>`;
+
+pages.forEach(p => {
+  const filePath = path.join('d:', 'Project A', 'frontend', 'pages', p.file);
+  fs.writeFileSync(filePath, template(p.title));
+  console.log('Created:', filePath);
+});
