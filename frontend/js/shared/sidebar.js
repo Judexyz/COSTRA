@@ -1,47 +1,82 @@
 const Sidebar = {
 
-  menus: [
-    {
-      section: 'Main',
-      items: [
-        { id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge', page: 'dashboard.html' }
-      ]
-    },
-    {
-      section: 'Master Data',
-      items: [
-        {
-          id: 'master', label: 'Master Data', icon: 'fa-database',
-          children: [
-            { id: 'asset-category', label: 'Asset Category', page: 'asset-category.html' },
-            { id: 'asset-brand',    label: 'Asset Brand',    page: 'asset-brand.html' },
-            { id: 'client',         label: 'Client',          page: 'client.html' },
-            { id: 'cause',          label: 'Cause',           page: 'cause.html' },
-            { id: 'impact',         label: 'Impact',          page: 'impact.html' }
-          ]
-        }
-      ]
-    },
-    {
-      section: 'Operations',
-      items: [
-        { id: 'asset',           label: 'Asset',           icon: 'fa-box-archive',        page: 'asset.html' },
-        { id: 'ticket',          label: 'Ticket',          icon: 'fa-ticket',             page: 'ticket.html' },
-        { id: 'incident',        label: 'Incident',        icon: 'fa-triangle-exclamation', page: 'incident.html' },
-        { id: 'service-request', label: 'Service Request', icon: 'fa-file-circle-plus',   page: 'service-request.html' },
-        { id: 'maintenance',     label: 'Maintenance',     icon: 'fa-screwdriver-wrench', page: 'maintenance.html' },
-        { id: 'reports',         label: 'Reports',         icon: 'fa-chart-pie',          page: 'reports.html' }
-      ]
-    },
-    {
-      section: 'System',
-      items: [
-        { id: 'users',     label: 'Users',     icon: 'fa-users',          page: 'users.html' },
-        { id: 'audit-log', label: 'Audit Log', icon: 'fa-clock-rotate-left', page: 'audit-log.html' },
-        { id: 'backups',   label: 'Backups',   icon: 'fa-box-archive',    page: 'backups.html' }
-      ]
-    }
-  ],
+  menus: {
+    helpdesk: [
+      {
+        section: 'Main',
+        items: [
+          { id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge', page: 'dashboard.html' }
+        ]
+      },
+      {
+        section: 'Master Data',
+        items: [
+          {
+            id: 'master', label: 'Master Data', icon: 'fa-database',
+            children: [
+              { id: 'asset-category', label: 'Asset Category', page: 'asset-category.html' },
+              { id: 'asset-brand',    label: 'Asset Brand',    page: 'asset-brand.html' },
+              { id: 'client',         label: 'Client',          page: 'client.html' },
+              { id: 'cause',          label: 'Cause',           page: 'cause.html' },
+              { id: 'impact',         label: 'Impact',          page: 'impact.html' }
+            ]
+          }
+        ]
+      },
+      {
+        section: 'Operations',
+        items: [
+          { id: 'asset',           label: 'Asset',           icon: 'fa-box-archive',        page: 'asset.html' },
+          { id: 'ticket',          label: 'Ticket',          icon: 'fa-ticket',             page: 'ticket.html' },
+          { id: 'incident',        label: 'Incident',        icon: 'fa-triangle-exclamation', page: 'incident.html' },
+          { id: 'service-request', label: 'Service Request', icon: 'fa-file-circle-plus',   page: 'service-request.html' }
+        ]
+      },
+      {
+        section: 'System',
+        items: [
+          { id: 'users',     label: 'Users',     icon: 'fa-users',          page: 'users.html' },
+          { id: 'audit-log', label: 'Audit Log', icon: 'fa-clock-rotate-left', page: 'audit-log.html' },
+          { id: 'backups',   label: 'Backups',   icon: 'fa-box-archive',    page: 'backups.html' }
+        ]
+      }
+    ],
+    cost_control: [
+      {
+        section: 'Main',
+        items: [
+          { id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge', page: 'dashboard.html' }
+        ]
+      },
+      {
+        section: 'Operations',
+        items: [
+          { id: 'maintenance',     label: 'Maintenance',     icon: 'fa-screwdriver-wrench', page: 'maintenance.html' },
+          { id: 'reports',         label: 'Reports',         icon: 'fa-chart-pie',          page: 'reports.html' }
+        ]
+      },
+      {
+        section: 'System',
+        items: [
+          { id: 'users',     label: 'Users',     icon: 'fa-users',          page: 'users.html' }
+        ]
+      }
+    ],
+    hr: [
+      {
+        section: 'Main',
+        items: [
+          { id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge', page: 'dashboard.html' }
+        ]
+      },
+      {
+        section: 'Coming Soon',
+        items: [
+          { id: 'coming-soon', label: 'Modul HR', icon: 'fa-users-gear', page: '#' }
+        ]
+      }
+    ]
+  },
 
   init() {
     const user = Storage.getUser();
@@ -60,7 +95,10 @@ const Sidebar = {
     if (!nav) return;
 
     let html = '';
-    this.menus.forEach(section => {
+    const currentModule = Storage.getModule();
+    const activeMenus = this.menus[currentModule] || this.menus['helpdesk'];
+
+    activeMenus.forEach(section => {
       html += `<div class="nav-section">
         <div class="nav-section-label">${section.section}</div>`;
 

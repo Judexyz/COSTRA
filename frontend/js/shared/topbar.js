@@ -2,7 +2,42 @@ const Topbar = {
 
   init() {
     this.loadUser();
+    this.injectModuleSwitcher();
     this.bindLogout();
+  },
+
+  injectModuleSwitcher() {
+    const topbarLeft = document.querySelector('.topbar-left');
+    if (!topbarLeft) return;
+
+    // Check if switcher already exists to prevent duplicate injections
+    if (document.getElementById('moduleSwitcher')) return;
+
+    const currentModule = Storage.getModule();
+
+    const switcherHtml = `
+      <div class="module-switcher" id="moduleSwitcher">
+        <select id="moduleSelect" class="module-select" onchange="Topbar.switchModule(this.value)">
+          <option value="helpdesk" ${currentModule === 'helpdesk' ? 'selected' : ''}>Helpdesk</option>
+          <option value="cost_control" ${currentModule === 'cost_control' ? 'selected' : ''}>Cost Control</option>
+          <option value="hr" ${currentModule === 'hr' ? 'selected' : ''}>HR</option>
+        </select>
+        <i class="fa-solid fa-chevron-down select-icon"></i>
+      </div>
+    `;
+
+    // Inject right after the sidebar toggle (before breadcrumb)
+    const toggleBtn = document.getElementById('sidebarToggle');
+    if (toggleBtn) {
+      toggleBtn.insertAdjacentHTML('afterend', switcherHtml);
+    } else {
+      topbarLeft.insertAdjacentHTML('afterbegin', switcherHtml);
+    }
+  },
+
+  switchModule(moduleName) {
+    Storage.setModule(moduleName);
+    window.location.href = 'dashboard.html';
   },
 
   loadUser() {

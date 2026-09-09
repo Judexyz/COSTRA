@@ -7,8 +7,22 @@ const DashboardPage = {
     try { if (typeof Sidebar !== 'undefined') Sidebar.init(); } catch (e) { console.warn('Sidebar init error:', e); }
     try { if (typeof Topbar !== 'undefined') Topbar.init(); } catch (e) { console.warn('Topbar init error:', e); }
     
+    this.updateTitle();
     this.loadStats();
     this.loadRecentTickets();
+  },
+
+  updateTitle() {
+    const subtitle = document.querySelector('.page-subtitle');
+    if (!subtitle) return;
+    const currentModule = Storage.getModule();
+    if (currentModule === 'cost_control') {
+      subtitle.textContent = 'Cost Control Dashboard';
+    } else if (currentModule === 'hr') {
+      subtitle.textContent = 'HR Dashboard';
+    } else {
+      subtitle.textContent = 'Helpdesk Dashboard';
+    }
   },
 
   async loadStats() {

@@ -659,3 +659,39 @@ select {
     --topbar-height: 56px;
   }
 }
+
+/* Module Switcher Styling */
+.module-switcher {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--primary-50);
+  border-radius: var(--radius-full);
+  padding: 0.25rem 0.5rem;
+  margin-left: 0.5rem;
+  border: 1px solid var(--primary-100);
+  transition: all var(--transition-fast);
+}
+.module-switcher:hover {
+  border-color: var(--primary-300);
+  background: white;
+  box-shadow: var(--shadow-sm);
+}
+.module-select {
+  appearance: none;
+  background: transparent;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-700);
+  padding: 0.25rem 1.5rem 0.25rem 0.5rem;
+  cursor: pointer;
+  outline: none;
+}
+.module-switcher .select-icon {
+  position: absolute;
+  right: 0.75rem;
+  font-size: 0.7rem;
+  color: var(--primary-500);
+  pointer-events: none;
+}

@@ -40,6 +40,14 @@ const Storage = {
   clearAll() {
     localStorage.removeItem('hd_token');
     localStorage.removeItem('hd_user');
+  },
+
+  setModule(moduleName) {
+    localStorage.setItem('hd_module', moduleName);
+  },
+
+  getModule() {
+    return localStorage.getItem('hd_module') || 'helpdesk';
   }
 
 };
