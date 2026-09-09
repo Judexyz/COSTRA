@@ -7,6 +7,21 @@ const ShiftPage = {
     this.bindTabs();
     this.renderUserShiftTable();
     this.renderCategoryTable();
+
+    const filterUser = document.getElementById('filterUser');
+    const filterSite = document.getElementById('filterSite');
+    
+    if (filterUser) {
+      filterUser.addEventListener('change', () => {
+        this.renderUserShiftTable(true);
+      });
+    }
+    
+    if (filterSite) {
+      filterSite.addEventListener('change', () => {
+        this.renderUserShiftTable(true);
+      });
+    }
   },
 
   initMonthPicker() {
@@ -156,27 +171,63 @@ const ShiftPage = {
     });
   },
 
-  renderUserShiftTable() {
+  renderUserShiftTable(hasData = false) {
     const headRow = document.getElementById('userShiftHead');
     const tbody = document.getElementById('userShiftBody');
     if (!headRow || !tbody) return;
 
-    // We will generate headers from 2026-09-01 to 2026-09-06 for empty state (or 30, but mock empty state just shows a few)
-    let headersHtml = '<th class="sticky-col">User Name</th>';
-    for (let i = 1; i <= 6; i++) {
-      const dateStr = `2026-09-${i.toString().padStart(2, '0')}`;
+    if (!hasData) {
+      // Empty state
+      headRow.innerHTML = '<th class="sticky-col">Site</th><th class="sticky-col">User Name</th>';
+      for (let i = 1; i <= 6; i++) {
+        const dateStr = `2026-09-${i.toString().padStart(2, '0')}`;
+        headRow.innerHTML += `<th>${dateStr}</th>`;
+      }
+      
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="8" style="text-align: center; padding: 4rem 1rem; color: var(--gray-800); background: #f8fafc;">
+            Please select site or user to see data
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    // Has Data
+    let headersHtml = '<th class="sticky-col">Site</th><th class="sticky-col">User Name</th>';
+    const dates = [];
+    const weekends = ['05', '06', '12', '13', '19', '20', '26', '27'];
+    for (let i = 1; i <= 30; i++) {
+      const day = i.toString().padStart(2, '0');
+      const dateStr = `2026-09-${day}`;
+      dates.push({ dateStr, day });
       headersHtml += `<th>${dateStr}</th>`;
     }
     headRow.innerHTML = headersHtml;
 
-    // Empty state
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="31" style="text-align: center; padding: 4rem 1rem; color: var(--gray-800); background: #f8fafc;">
-          Please select site or user to see data
-        </td>
-      </tr>
-    `;
+    const mockSites = ['ducimus', 'officiis', 'rerum', 'molestias'];
+    const userFilter = document.getElementById('filterUser');
+    const userName = userFilter && userFilter.value ? userFilter.value : 'devTeknisi10';
+
+    let bodyHtml = '';
+    mockSites.forEach(site => {
+      bodyHtml += `<tr>`;
+      bodyHtml += `<td class="sticky-col">${this.escapeHtml(site)}</td>`;
+      bodyHtml += `<td class="sticky-col">${this.escapeHtml(userName)}</td>`;
+      
+      dates.forEach(d => {
+        const isOff = weekends.includes(d.day);
+        if (isOff) {
+          bodyHtml += `<td><div style="border: 1px solid var(--gray-300); border-radius: 6px; min-width: 70px; height: 36px; display: flex; align-items: center; padding-left: 0.75rem; font-weight: 500; font-size: 0.875rem; color: var(--gray-700);">OFF</div></td>`;
+        } else {
+          bodyHtml += `<td><div style="border: 1px solid var(--gray-300); border-radius: 6px; min-width: 70px; height: 36px;"></div></td>`;
+        }
+      });
+      bodyHtml += `</tr>`;
+    });
+
+    tbody.innerHTML = bodyHtml;
   },
 
   renderCategoryTable() {
