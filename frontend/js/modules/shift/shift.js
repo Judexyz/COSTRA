@@ -206,14 +206,15 @@ const ShiftPage = {
     }
     headRow.innerHTML = headersHtml;
 
-    const mockSites = ['ducimus', 'officiis', 'rerum', 'molestias'];
     const userFilter = document.getElementById('filterUser');
-    const userName = userFilter && userFilter.value ? userFilter.value : 'devTeknisi10';
+    const selectedUser = userFilter && userFilter.value ? userFilter.value : '';
+
+    const usersToRender = selectedUser ? [selectedUser] : ['Jude', 'Yashir', 'Jimbo'];
 
     let bodyHtml = '';
-    mockSites.forEach(site => {
+    usersToRender.forEach(userName => {
       bodyHtml += `<tr>`;
-      bodyHtml += `<td class="sticky-col">${this.escapeHtml(site)}</td>`;
+      bodyHtml += `<td class="sticky-col">-</td>`;
       bodyHtml += `<td class="sticky-col">${this.escapeHtml(userName)}</td>`;
       
       dates.forEach(d => {
