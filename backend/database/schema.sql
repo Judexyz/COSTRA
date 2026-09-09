@@ -144,6 +144,8 @@ CREATE TABLE maintenance (
     status      ENUM('scheduled','in_progress','done','cancelled') DEFAULT 'scheduled',
     notes       TEXT NULL,
     cost        DECIMAL(12,2) NULL DEFAULT 0.00,
+    validation_status ENUM('pending', 'validated', 'rejected') DEFAULT 'pending',
+    validation_notes TEXT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at  TIMESTAMP NULL DEFAULT NULL,

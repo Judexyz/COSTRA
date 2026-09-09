@@ -107,6 +107,8 @@ $sql = "CREATE TABLE IF NOT EXISTS maintenance (
     status      ENUM('scheduled','in_progress','done','cancelled') DEFAULT 'scheduled',
     notes       TEXT NULL,
     cost        DECIMAL(12,2) NULL DEFAULT 0.00,
+    validation_status ENUM('pending', 'validated', 'rejected') DEFAULT 'pending',
+    validation_notes TEXT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at  TIMESTAMP NULL DEFAULT NULL,
@@ -179,13 +181,23 @@ if ($db->query($sql)) {
     echo "Error creating service_requests: " . $db->error . "\n";
 }
 
-// 10. Tambahkan kolom cost pada tabel maintenance
+// 10. Tambahkan kolom cost, validation_status, dan validation_notes pada tabel maintenance
 $sql = "SHOW COLUMNS FROM maintenance LIKE 'cost'";
 if ($db->query($sql)->num_rows === 0) {
     $db->query("ALTER TABLE maintenance ADD COLUMN cost DECIMAL(12,2) NULL DEFAULT 0.00 AFTER notes");
     echo "Added cost column to maintenance table.\n";
 } else {
     echo "Cost column already exists in maintenance table.\n";
+}
+$sql = "SHOW COLUMNS FROM maintenance LIKE 'validation_status'";
+if ($db->query($sql)->num_rows === 0) {
+    $db->query("ALTER TABLE maintenance ADD COLUMN validation_status ENUM('pending', 'validated', 'rejected') DEFAULT 'pending' AFTER cost");
+    echo "Added validation_status column to maintenance table.\n";
+}
+$sql = "SHOW COLUMNS FROM maintenance LIKE 'validation_notes'";
+if ($db->query($sql)->num_rows === 0) {
+    $db->query("ALTER TABLE maintenance ADD COLUMN validation_notes TEXT NULL AFTER validation_status");
+    echo "Added validation_notes column to maintenance table.\n";
 }
 
 // 11. Pastikan kolom cause_id dan impact_id ada di incidents
