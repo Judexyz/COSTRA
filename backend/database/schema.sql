@@ -123,16 +123,18 @@ CREATE TABLE tickets (
     user_id     INT NULL,
     priority    ENUM('low','medium','high','critical') DEFAULT 'medium',
     severity    ENUM('minor','major','critical') DEFAULT 'minor',
-    status      ENUM('open','assigned','progress','pending','closed') DEFAULT 'open',
+    status      ENUM('open', 'in_progress', 'resolved', 'closed', 'rejected') NOT NULL DEFAULT 'open',
     sla_due_date DATETIME NULL,
     sla_status  ENUM('ok','warning','breached') NOT NULL DEFAULT 'ok',
     description TEXT NULL,
+    created_by  INT NULL,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at  TIMESTAMP NULL DEFAULT NULL,
     FOREIGN KEY (asset_id)  REFERENCES assets(id),
     FOREIGN KEY (client_id) REFERENCES clients(id),
-    FOREIGN KEY (user_id)   REFERENCES users(id)
+    FOREIGN KEY (user_id)   REFERENCES users(id),
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
 #maintenance
