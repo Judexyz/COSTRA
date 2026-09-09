@@ -22,6 +22,45 @@ const ShiftPage = {
         this.renderUserShiftTable(true);
       });
     }
+
+    this.bindCategoryModal();
+  },
+
+  bindCategoryModal() {
+    const btnOpen = document.getElementById('btnAddShiftCategory');
+    const modal = document.getElementById('modalAddShiftCategory');
+    const btnClose = document.getElementById('closeModalShiftCategory');
+    const btnCancel = document.getElementById('cancelModalShiftCategory');
+    const btnSave = document.getElementById('saveModalShiftCategory');
+
+    if (!btnOpen || !modal) return;
+
+    btnOpen.addEventListener('click', () => {
+      modal.style.display = 'flex';
+    });
+
+    const closeModal = () => {
+      modal.style.display = 'none';
+    };
+
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (btnCancel) btnCancel.addEventListener('click', closeModal);
+
+    // Optional: close on click outside
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    if (btnSave) {
+      btnSave.addEventListener('click', () => {
+        if (typeof Toast !== 'undefined') {
+          Toast.show('Shift Category saved successfully (Mock)', 'success');
+        }
+        closeModal();
+      });
+    }
   },
 
   initMonthPicker() {

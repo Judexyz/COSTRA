@@ -58,7 +58,7 @@
         </div>
         
         <div id="shiftCategoryActions" style="display: none; padding-bottom: 1rem;">
-          <button class="btn btn-primary" style="background: #1e293b; color: white;">
+          <button id="btnAddShiftCategory" class="btn btn-primary" style="background: #1e293b; color: white;">
             <i class="fa-solid fa-plus"></i> New Shift Category
           </button>
         </div>
@@ -215,6 +215,56 @@
   <script>const BASE_URL = window.location.origin + '/backend/api';</script>
   <script src="../js/utils/storage.js"></script>
   <script src="../js/shared/toast.js"></script>
+  <!-- Modal: Add New Shift Category -->
+  <div class="modal" id="modalAddShiftCategory" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: white; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--gray-200);">
+        <h2 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin: 0;">Add New Shift Category</h2>
+        <button id="closeModalShiftCategory" style="background: transparent; border: none; font-size: 1.25rem; color: var(--gray-500); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div style="padding: 1.5rem;">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">Name</label>
+          <input type="text" class="form-control" style="width: 100%;">
+        </div>
+        <div style="margin-bottom: 1rem; display: flex; gap: 1rem;">
+          <div style="flex: 1;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">Type</label>
+            <div style="position: relative;">
+              <select class="form-control" style="width: 100%; appearance: none; -moz-appearance: none; -webkit-appearance: none;">
+                <option value="Paid">Paid</option>
+                <option value="Unpaid">Unpaid</option>
+              </select>
+              <i class="fa-solid fa-caret-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-500); pointer-events: none;"></i>
+            </div>
+          </div>
+          <div style="flex: 1;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">Category</label>
+            <div style="position: relative;">
+              <select class="form-control" style="width: 100%; appearance: none; -moz-appearance: none; -webkit-appearance: none;">
+                <option value="Attendance">Attendance</option>
+                <option value="On Leave">On Leave</option>
+              </select>
+              <i class="fa-solid fa-caret-down" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-500); pointer-events: none;"></i>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">Code</label>
+          <input type="text" class="form-control" style="width: 100%;">
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">Description</label>
+          <textarea class="form-control" style="width: 100%; min-height: 80px;"></textarea>
+        </div>
+      </div>
+      <div style="padding: 1rem 1.5rem; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 1rem; background: #f8fafc; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;">
+        <button id="cancelModalShiftCategory" class="btn btn-outline" style="border: 1px solid var(--gray-300); background: white; color: var(--gray-700);">Cancel</button>
+        <button id="saveModalShiftCategory" class="btn btn-primary" style="background: var(--primary-600); color: white;">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/shared/sidebar.js"></script>
   <script src="../js/shared/topbar.js"></script>
   <script src="../js/modules/shift/shift.js"></script>
