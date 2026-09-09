@@ -16,13 +16,13 @@ const Topbar = {
     const currentModule = Storage.getModule();
 
     const switcherHtml = `
-      <div class="module-switcher" id="moduleSwitcher">
-        <select id="moduleSelect" class="module-select" onchange="Topbar.switchModule(this.value)">
+      <div class="module-switcher" id="moduleSwitcher" style="position: relative;">
+        <select id="moduleSelect" class="module-select" onchange="Topbar.switchModule(this.value)" style="background-color: #eff6ff; color: #2563eb; border: none; font-weight: 600; padding: 0.5rem 2.5rem 0.5rem 1rem; border-radius: 9999px; appearance: none; -moz-appearance: none; -webkit-appearance: none; cursor: pointer;">
           <option value="helpdesk" ${currentModule === 'helpdesk' ? 'selected' : ''}>Helpdesk</option>
           <option value="cost_control" ${currentModule === 'cost_control' ? 'selected' : ''}>Cost Control</option>
           <option value="hr" ${currentModule === 'hr' ? 'selected' : ''}>HR</option>
         </select>
-        <i class="fa-solid fa-chevron-down select-icon"></i>
+        <i class="fa-solid fa-chevron-down select-icon" style="position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); color: #2563eb; pointer-events: none; font-size: 0.75rem;"></i>
       </div>
     `;
 
