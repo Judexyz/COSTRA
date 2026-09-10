@@ -1,44 +1,110 @@
 const Overtime = {
-  mockData: [],
+  requests: [],
+  currentUser: null,
 
   init() {
     try { if (typeof Sidebar !== 'undefined') Sidebar.init(); } catch (e) { console.warn('Sidebar init error:', e); }
     try { if (typeof Topbar !== 'undefined') Topbar.init(); } catch (e) { console.warn('Topbar init error:', e); }
+    
+    this.currentUser = (typeof Storage !== 'undefined' && Storage.getUser()) ? Storage.getUser() : null;
 
-    this.renderTable();
+    this.loadRequests();
     this.bindFilters();
     this.initDatePicker();
     this.bindModal();
+  },
+
+  async loadRequests() {
+    try {
+      const token = Storage.getToken();
+      const res = await fetch('../backend/api/overtime/list.php', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await res.json();
+      if (data.success) {
+        this.requests = data.data;
+        this.renderTable();
+      }
+    } catch (err) {
+      console.error('Failed to load overtime requests:', err);
+    }
   },
 
   renderTable() {
     const tbody = document.getElementById('overtimeTableBody');
     if (!tbody) return;
 
-    if (this.mockData.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 4rem; color: var(--gray-700); font-weight: 500;">No rows</td></tr>`;
+    if (this.requests.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 4rem; color: var(--gray-700); font-weight: 500;">No rows</td></tr>`;
       return;
     }
 
     let html = '';
-    this.mockData.forEach(item => {
+    const isHR = this.currentUser && this.currentUser.role === 'hr';
+
+    this.requests.forEach(item => {
       let statusStyle = '';
       if (item.status === 'Approved') statusStyle = 'color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
       else if (item.status === 'Pending') statusStyle = 'color: #ca8a04; background: #fef08a; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
       else if (item.status === 'Rejected') statusStyle = 'color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
 
+      let actionHtml = '';
+      if (isHR && item.status === 'Pending') {
+        actionHtml = `
+          <button onclick="Overtime.updateStatus(${item.id}, 'Approved')" style="background: none; border: none; color: #16a34a; cursor: pointer; margin-right: 0.5rem;"><i class="fa-solid fa-check"></i></button>
+          <button onclick="Overtime.updateStatus(${item.id}, 'Rejected')" style="background: none; border: none; color: #dc2626; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        `;
+      } else if (item.status !== 'Pending') {
+        actionHtml = `<span style="${statusStyle}">${item.status}</span>`;
+      } else {
+        actionHtml = `<span style="${statusStyle}">Pending</span>`;
+      }
+
       html += `
         <tr>
-          <td><div style="font-weight: 500;">${item.user}</div></td>
-          <td>${item.site || '-'}</td>
-          <td>${item.approver || '-'}</td>
-          <td>${item.start}</td>
-          <td>${item.end}</td>
+          <td><div style="font-weight: 500;">${item.user_name}</div></td>
+          <td>-</td>
+          <td>${item.approver_name || 'Pending Approval'}</td>
+          <td>${item.date} ${item.start_time}</td>
+          <td>${item.date} ${item.end_time}</td>
+          ${isHR ? `<td>${actionHtml}</td>` : ''}
         </tr>
       `;
     });
 
     tbody.innerHTML = html;
+    
+    // Add action header if HR
+    const theadTr = document.querySelector('#overtimeTableBody').previousElementSibling.querySelector('tr');
+    if (isHR && !theadTr.querySelector('.action-header')) {
+        theadTr.innerHTML += '<th class="action-header" style="color: #0ea5e9; padding: 1rem 1.5rem; border-bottom: none;">Action</th>';
+    }
+  },
+
+  async updateStatus(id, status) {
+    if (!confirm(`Are you sure you want to ${status.toLowerCase()} this request?`)) return;
+    try {
+      const token = Storage.getToken();
+      const res = await fetch('../backend/api/overtime/approve.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ id, status })
+      });
+      const data = await res.json();
+      if (data.success) {
+        if (typeof Toast !== 'undefined') Toast.show(`Request ${status.toLowerCase()} successfully`, 'success');
+        this.loadRequests();
+      } else {
+        if (typeof Toast !== 'undefined') Toast.show(data.message || 'Error updating status', 'error');
+      }
+    } catch (err) {
+      console.error(err);
+    }
   },
 
   bindFilters() {
@@ -83,36 +149,46 @@ const Overtime = {
     });
 
     if (btnSave) {
-      btnSave.addEventListener('click', (e) => {
+      btnSave.addEventListener('click', async (e) => {
         e.preventDefault();
         
-        const user = document.getElementById('modalInputUser').value;
         const date = document.getElementById('modalInputDate').value;
         const start = document.getElementById('modalInputStart').value;
         const end = document.getElementById('modalInputEnd').value;
+        const reason = document.getElementById('modalInputReason').value;
         
         if (!date || !start || !end) {
           if (typeof Toast !== 'undefined') Toast.show('Please fill all required fields', 'error');
           return;
         }
 
-        const newRequest = {
-          id: this.mockData.length + 1,
-          user: user,
-          site: '-',
-          approver: 'Pending Approval',
-          start: `${date} ${start}`,
-          end: `${date} ${end}`,
-          status: 'Pending'
-        };
-
-        this.mockData.push(newRequest);
-        this.renderTable();
-        
-        if (typeof Toast !== 'undefined') {
-          Toast.show('Overtime request submitted successfully!', 'success');
+        try {
+          const token = Storage.getToken();
+          const res = await fetch('../backend/api/overtime/create.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              date: date,
+              start_time: start,
+              end_time: end,
+              reason: reason
+            })
+          });
+          const data = await res.json();
+          if (data.success) {
+            if (typeof Toast !== 'undefined') Toast.show('Overtime request submitted successfully!', 'success');
+            closeModal();
+            this.loadRequests();
+          } else {
+            if (typeof Toast !== 'undefined') Toast.show(data.message || 'Error submitting request', 'error');
+          }
+        } catch (err) {
+          console.error(err);
+          if (typeof Toast !== 'undefined') Toast.show('Network error', 'error');
         }
-        closeModal();
       });
     }
   },
