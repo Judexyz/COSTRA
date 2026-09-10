@@ -36,7 +36,25 @@ const Overtime = {
     const tbody = document.getElementById('overtimeTableBody');
     if (!tbody) return;
 
-    if (this.requests.length === 0) {
+    // Get filter values
+    const filterUserVal = document.getElementById('filterUser')?.value || '';
+    const filterSiteVal = document.getElementById('filterSite')?.value || '';
+    const searchInputVal = document.querySelector('input[type="text"][placeholder="Search..."]')?.value.toLowerCase() || '';
+
+    let filteredData = this.requests;
+
+    if (filterUserVal) {
+      filteredData = filteredData.filter(item => item.user_name === filterUserVal);
+    }
+    // (Assuming site is always '-' for now, since it's not saved in DB)
+    if (searchInputVal) {
+      filteredData = filteredData.filter(item => 
+        (item.user_name || '').toLowerCase().includes(searchInputVal) ||
+        (item.reason || '').toLowerCase().includes(searchInputVal)
+      );
+    }
+
+    if (filteredData.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 4rem; color: var(--gray-700); font-weight: 500;">No rows</td></tr>`;
       return;
     }
@@ -44,7 +62,7 @@ const Overtime = {
     let html = '';
     const isHR = this.currentUser && this.currentUser.role === 'hr';
 
-    this.requests.forEach(item => {
+    filteredData.forEach(item => {
       let statusStyle = '';
       if (item.status === 'Approved') statusStyle = 'color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
       else if (item.status === 'Pending') statusStyle = 'color: #ca8a04; background: #fef08a; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
