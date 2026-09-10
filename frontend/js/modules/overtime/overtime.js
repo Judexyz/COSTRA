@@ -130,6 +130,11 @@ const Overtime = {
     const filterSite = document.getElementById('filterSite');
     const searchInput = document.querySelector('input[type="text"][placeholder="Search..."]');
 
+    // Hide user filter if not HR
+    if (filterUser && this.currentUser && this.currentUser.role !== 'hr') {
+      filterUser.parentElement.style.display = 'none';
+    }
+
     if (filterUser) filterUser.addEventListener('change', () => this.renderTable());
     if (filterSite) filterSite.addEventListener('change', () => this.renderTable());
     if (searchInput) searchInput.addEventListener('input', () => this.renderTable());
