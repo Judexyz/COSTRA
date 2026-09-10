@@ -1,11 +1,10 @@
 #seeder awal
-USE railway;
-
 #roles
 INSERT INTO roles (name) VALUES
 ('super_admin'),
 ('admin'),
-('staff');
+('staff'),
+('hr');
 
 #users
 INSERT INTO users (name, email, password, role) VALUES
@@ -24,6 +23,30 @@ INSERT INTO users (name, email, password, role) VALUES
 (
     'Staff',
     'staff@himawaridigi.com',
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    'staff'
+),
+(
+    'HR',
+    'hr@himawaridigi.com',
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    'hr'
+),
+(
+    'Jude',
+    'jude@himawaridigi.com',
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    'staff'
+),
+(
+    'Yashir',
+    'yashir@himawaridigi.com',
+    '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+    'staff'
+),
+(
+    'Jimbo',
+    'jimbo@himawaridigi.com',
     '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     'staff'
 );
