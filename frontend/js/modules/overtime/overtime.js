@@ -60,7 +60,7 @@ const Overtime = {
     }
 
     let html = '';
-    const isHR = this.currentUser && this.currentUser.role === 'hr';
+    const isPrivileged = this.currentUser && ['hr', 'admin', 'super_admin'].includes(this.currentUser.role);
 
     filteredData.forEach(item => {
       let statusStyle = '';
@@ -69,7 +69,7 @@ const Overtime = {
       else if (item.status === 'Rejected') statusStyle = 'color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
 
       let actionHtml = '';
-      if (isHR && item.status === 'Pending') {
+      if (isPrivileged && item.status === 'Pending') {
         actionHtml = `
           <button onclick="Overtime.updateStatus(${item.id}, 'Approved')" style="background: none; border: none; color: #16a34a; cursor: pointer; margin-right: 0.5rem;"><i class="fa-solid fa-check"></i></button>
           <button onclick="Overtime.updateStatus(${item.id}, 'Rejected')" style="background: none; border: none; color: #dc2626; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
@@ -94,10 +94,10 @@ const Overtime = {
 
     tbody.innerHTML = html;
     
-    // Change header text if HR
+    // Change header text if HR/Admin
     const thStatus = document.getElementById('thStatus');
     if (thStatus) {
-      thStatus.innerText = isHR ? 'Action / Status' : 'Status';
+      thStatus.innerText = isPrivileged ? 'Action / Status' : 'Status';
     }
   },
 
@@ -130,8 +130,8 @@ const Overtime = {
     const filterSite = document.getElementById('filterSite');
     const searchInput = document.querySelector('input[type="text"][placeholder="Search..."]');
 
-    // Hide user filter if not HR
-    if (filterUser && this.currentUser && this.currentUser.role !== 'hr') {
+    // Hide user filter if not privileged
+    if (filterUser && this.currentUser && !['hr', 'admin', 'super_admin'].includes(this.currentUser.role)) {
       filterUser.parentElement.style.display = 'none';
     }
 
