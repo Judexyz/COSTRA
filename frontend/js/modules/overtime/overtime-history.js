@@ -125,29 +125,52 @@ const OvertimeHistory = {
         return;
       }
       
-      const csvRows = [];
-      const headers = ['Name', 'Site', 'Approver', 'Start', 'End', 'Status'];
-      csvRows.push(headers.join(','));
+      if (typeof XLSX === 'undefined') {
+        if (typeof Toast !== 'undefined') Toast.show('Export library is still loading, please try again.', 'error');
+        return;
+      }
+      
+      const exportData = [];
+      
+      // Title rows
+      exportData.push(["PT. SINERGI TEKNOGLOBAL PERKASA"]);
+      exportData.push(["OVERTIME HISTORY REPORT"]);
+      exportData.push(["Generated On:", new Date().toLocaleString()]);
+      exportData.push([]); // Blank row
+      
+      // Headers
+      exportData.push(['Name', 'Site', 'Approver', 'Start Date & Time', 'End Date & Time', 'Status']);
 
+      // Rows
       this.requests.forEach(req => {
-        const row = [
-          `"${req.user_name}"`,
-          `"-"`,
-          `"${req.approver_name || 'Pending Approval'}"`,
-          `="${req.date} ${req.start_time}"`,
-          `="${req.date} ${req.end_time}"`,
-          `"${req.status}"`
-        ];
-        csvRows.push(row.join(','));
+        exportData.push([
+          req.user_name,
+          '-',
+          req.approver_name || 'Pending Approval',
+          `${req.date} ${req.start_time}`,
+          `${req.date} ${req.end_time}`,
+          req.status
+        ]);
       });
 
-      const csvString = csvRows.join('\n');
-      const blob = new Blob([csvString], { type: 'text/csv' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.setAttribute('href', url);
-      a.setAttribute('download', 'overtime_history.csv');
-      a.click();
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(exportData);
+
+      // Set column widths
+      ws['!cols'] = [
+        { wch: 25 }, // Name
+        { wch: 15 }, // Site
+        { wch: 25 }, // Approver
+        { wch: 22 }, // Start
+        { wch: 22 }, // End
+        { wch: 15 }  // Status
+      ];
+
+      XLSX.utils.book_append_sheet(wb, ws, "Overtime History");
+
+      // Download
+      XLSX.writeFile(wb, 'Overtime_History_Report.xlsx');
     });
   },
 
