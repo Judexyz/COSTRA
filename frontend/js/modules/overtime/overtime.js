@@ -87,17 +87,17 @@ const Overtime = {
           <td>${item.approver_name || 'Pending Approval'}</td>
           <td>${item.date} ${item.start_time}</td>
           <td>${item.date} ${item.end_time}</td>
-          ${isHR ? `<td>${actionHtml}</td>` : ''}
+          <td>${actionHtml}</td>
         </tr>
       `;
     });
 
     tbody.innerHTML = html;
     
-    // Add action header if HR
-    const theadTr = document.querySelector('#overtimeTableBody').previousElementSibling.querySelector('tr');
-    if (isHR && !theadTr.querySelector('.action-header')) {
-        theadTr.innerHTML += '<th class="action-header" style="color: #0ea5e9; padding: 1rem 1.5rem; border-bottom: none;">Action</th>';
+    // Change header text if HR
+    const thStatus = document.getElementById('thStatus');
+    if (thStatus) {
+      thStatus.innerText = isHR ? 'Action / Status' : 'Status';
     }
   },
 
