@@ -1,5 +1,6 @@
 #seeder awal
 USE railway;
+
 #roles
 INSERT INTO roles (name) VALUES
 ('super_admin'),
