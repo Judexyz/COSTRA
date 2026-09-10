@@ -61,6 +61,11 @@ const Overtime = {
     if (!btnOpen || !modal) return;
 
     btnOpen.addEventListener('click', () => {
+      const user = (typeof Storage !== 'undefined' && Storage.getUser()) ? Storage.getUser().name : 'Jude';
+      const inputUser = document.getElementById('modalInputUser');
+      if (inputUser) {
+        inputUser.value = user;
+      }
       modal.style.display = 'flex';
     });
 
