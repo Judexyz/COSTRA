@@ -1,10 +1,5 @@
 const Overtime = {
-  mockData: [
-    { id: 1, user: 'Jude', date: '2026-09-01', start: '17:00', end: '19:00', duration: '2 hours', status: 'Approved' },
-    { id: 2, user: 'Yashir', date: '2026-09-02', start: '18:00', end: '20:30', duration: '2.5 hours', status: 'Pending' },
-    { id: 3, user: 'Jimbo', date: '2026-09-05', start: '17:30', end: '18:30', duration: '1 hour', status: 'Rejected' },
-    { id: 4, user: 'Jude', date: '2026-09-08', start: '17:00', end: '21:00', duration: '4 hours', status: 'Pending' },
-  ],
+  mockData: [],
 
   init() {
     try { if (typeof Sidebar !== 'undefined') Sidebar.init(); } catch (e) { console.warn('Sidebar init error:', e); }
@@ -13,14 +8,36 @@ const Overtime = {
     this.renderTable();
     this.bindFilters();
     this.initDatePicker();
+    this.bindModal();
   },
 
   renderTable() {
     const tbody = document.getElementById('overtimeTableBody');
     if (!tbody) return;
 
-    // For now, always show empty state to match mockup exactly
-    const html = `<tr><td colspan="5" style="text-align: center; padding: 4rem; color: var(--gray-700); font-weight: 500;">No rows</td></tr>`;
+    if (this.mockData.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 4rem; color: var(--gray-700); font-weight: 500;">No rows</td></tr>`;
+      return;
+    }
+
+    let html = '';
+    this.mockData.forEach(item => {
+      let statusStyle = '';
+      if (item.status === 'Approved') statusStyle = 'color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
+      else if (item.status === 'Pending') statusStyle = 'color: #ca8a04; background: #fef08a; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
+      else if (item.status === 'Rejected') statusStyle = 'color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
+
+      html += `
+        <tr>
+          <td><div style="font-weight: 500;">${item.user}</div></td>
+          <td>${item.site || '-'}</td>
+          <td>${item.approver || '-'}</td>
+          <td>${item.start}</td>
+          <td>${item.end}</td>
+        </tr>
+      `;
+    });
+
     tbody.innerHTML = html;
   },
 
@@ -32,6 +49,67 @@ const Overtime = {
     if (filterUser) filterUser.addEventListener('change', () => this.renderTable());
     if (filterSite) filterSite.addEventListener('change', () => this.renderTable());
     if (searchInput) searchInput.addEventListener('input', () => this.renderTable());
+  },
+
+  bindModal() {
+    const btnOpen = document.getElementById('btnRequestOvertime');
+    const modal = document.getElementById('modalRequestOvertime');
+    const btnClose = document.getElementById('closeModalOvertime');
+    const btnCancel = document.getElementById('cancelModalOvertime');
+    const btnSave = document.getElementById('saveModalOvertime');
+
+    if (!btnOpen || !modal) return;
+
+    btnOpen.addEventListener('click', () => {
+      modal.style.display = 'flex';
+    });
+
+    const closeModal = () => {
+      modal.style.display = 'none';
+      const form = document.getElementById('formRequestOvertime');
+      if (form) form.reset();
+    };
+
+    if (btnClose) btnClose.addEventListener('click', closeModal);
+    if (btnCancel) btnCancel.addEventListener('click', (e) => { e.preventDefault(); closeModal(); });
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    if (btnSave) {
+      btnSave.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        const user = document.getElementById('modalInputUser').value;
+        const date = document.getElementById('modalInputDate').value;
+        const start = document.getElementById('modalInputStart').value;
+        const end = document.getElementById('modalInputEnd').value;
+        
+        if (!date || !start || !end) {
+          if (typeof Toast !== 'undefined') Toast.show('Please fill all required fields', 'error');
+          return;
+        }
+
+        const newRequest = {
+          id: this.mockData.length + 1,
+          user: user,
+          site: '-',
+          approver: 'Pending Approval',
+          start: `${date} ${start}`,
+          end: `${date} ${end}`,
+          status: 'Pending'
+        };
+
+        this.mockData.push(newRequest);
+        this.renderTable();
+        
+        if (typeof Toast !== 'undefined') {
+          Toast.show('Overtime request submitted successfully!', 'success');
+        }
+        closeModal();
+      });
+    }
   },
 
   initDatePicker() {

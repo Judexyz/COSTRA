@@ -38,11 +38,14 @@
     </header>
 
     <main class="page-content">
-      <div class="page-header" style="justify-content: space-between; align-items: flex-end;">
+      <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <h1 class="page-title">Overtime Request</h1>
           <p class="page-subtitle">Dashboard • Overtime Request</p>
         </div>
+        <button id="btnRequestOvertime" class="btn btn-primary" style="background: #0ea5e9; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem;">
+          <i class="fa-solid fa-plus"></i> Request Overtime
+        </button>
       </div>
 
       <div class="card" style="margin-top: 1.5rem;">
@@ -142,6 +145,50 @@
   <script src="../js/utils/storage.js"></script>
   <script src="../js/shared/toast.js"></script>
 
+
+  <!-- Modal: Request Overtime -->
+  <div class="modal" id="modalRequestOvertime" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div class="modal-content" style="background: white; border-radius: 12px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); overflow: hidden; transform: scale(0.95); transition: transform 0.2s ease-out;">
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid var(--gray-100); background: #f8fafc;">
+        <h2 style="font-size: 1.125rem; font-weight: 600; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;"><i class="fa-solid fa-clock" style="color: #0ea5e9;"></i> Request Overtime</h2>
+        <button id="closeModalOvertime" style="background: transparent; border: none; font-size: 1.25rem; color: var(--gray-400); cursor: pointer; transition: color 0.2s;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div style="padding: 1.5rem;">
+        <form id="formRequestOvertime">
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">User</label>
+            <select id="modalInputUser" class="form-control" style="width: 100%; border-radius: 6px; border: 1px solid var(--gray-300); padding: 0.625rem;">
+              <option value="Jude">Jude</option>
+              <option value="Yashir">Yashir</option>
+              <option value="Jimbo">Jimbo</option>
+            </select>
+          </div>
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">Date</label>
+            <input type="date" id="modalInputDate" class="form-control" style="width: 100%; border-radius: 6px; border: 1px solid var(--gray-300); padding: 0.625rem;" required>
+          </div>
+          <div style="margin-bottom: 1.25rem; display: flex; gap: 1rem;">
+            <div style="flex: 1;">
+              <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">Start Time</label>
+              <input type="time" id="modalInputStart" class="form-control" style="width: 100%; border-radius: 6px; border: 1px solid var(--gray-300); padding: 0.625rem;" required>
+            </div>
+            <div style="flex: 1;">
+              <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">End Time</label>
+              <input type="time" id="modalInputEnd" class="form-control" style="width: 100%; border-radius: 6px; border: 1px solid var(--gray-300); padding: 0.625rem;" required>
+            </div>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--gray-700); margin-bottom: 0.5rem;">Reason (Optional)</label>
+            <textarea id="modalInputReason" class="form-control" placeholder="Briefly describe the reason for overtime..." style="width: 100%; min-height: 80px; border-radius: 6px; border: 1px solid var(--gray-300); padding: 0.625rem; font-family: inherit; resize: vertical;"></textarea>
+          </div>
+        </form>
+      </div>
+      <div style="padding: 1.25rem 1.5rem; border-top: 1px solid var(--gray-100); display: flex; justify-content: flex-end; gap: 1rem; background: #f8fafc;">
+        <button id="cancelModalOvertime" class="btn btn-outline" style="border: 1px solid var(--gray-300); background: white; color: var(--gray-700); padding: 0.5rem 1rem; border-radius: 6px; font-weight: 500; cursor: pointer;">Cancel</button>
+        <button id="saveModalOvertime" class="btn btn-primary" style="background: #0ea5e9; color: white; border: none; padding: 0.5rem 1.25rem; border-radius: 6px; font-weight: 500; cursor: pointer;">Submit Request</button>
+      </div>
+    </div>
+  </div>
 
   <script src="../js/shared/sidebar.js"></script>
   <script src="../js/shared/topbar.js"></script>
