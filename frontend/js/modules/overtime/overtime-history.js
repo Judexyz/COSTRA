@@ -134,8 +134,8 @@ const OvertimeHistory = {
           `"${req.user_name}"`,
           `"-"`,
           `"${req.approver_name || 'Pending Approval'}"`,
-          `"${req.date} ${req.start_time}"`,
-          `"${req.date} ${req.end_time}"`,
+          `="${req.date} ${req.start_time}"`,
+          `="${req.date} ${req.end_time}"`,
           `"${req.status}"`
         ];
         csvRows.push(row.join(','));
