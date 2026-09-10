@@ -16,7 +16,7 @@ if (!$user) {
 
 $db = getDB();
 
-if ($user->role === 'hr' || $user->role === 'admin' || $user->role === 'super_admin') {
+if ($user['role'] === 'hr' || $user['role'] === 'admin' || $user['role'] === 'super_admin') {
     // HR can see all requests
     $query = "
         SELECT o.id, o.date, o.start_time, o.end_time, o.reason, o.status, 
@@ -41,7 +41,7 @@ if ($user->role === 'hr' || $user->role === 'admin' || $user->role === 'super_ad
         ORDER BY o.created_at DESC
     ";
     $stmt = $db->prepare($query);
-    $stmt->bind_param("i", $user->id);
+    $stmt->bind_param("i", $user['id']);
 }
 
 $stmt->execute();

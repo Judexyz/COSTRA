@@ -25,7 +25,7 @@ if (!isset($data->date) || !isset($data->start_time) || !isset($data->end_time))
 $db = getDB();
 $stmt = $db->prepare("INSERT INTO overtime_requests (user_id, date, start_time, end_time, reason) VALUES (?, ?, ?, ?, ?)");
 $reason = isset($data->reason) ? $data->reason : '';
-$stmt->bind_param("issss", $user->id, $data->date, $data->start_time, $data->end_time, $reason);
+$stmt->bind_param("issss", $user['id'], $data->date, $data->start_time, $data->end_time, $reason);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'Overtime request submitted']);
