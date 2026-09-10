@@ -29,7 +29,8 @@ const Sidebar = {
         items: [
           { id: 'attendance', label: 'Attendance',       icon: 'fa-address-card', page: 'attendance.html' },
           { id: 'shift',      label: 'Shift Management', icon: 'fa-calendar-days', page: 'shift.html' },
-          { id: 'overtime',   label: 'Overtime',         icon: 'fa-clock',        page: 'overtime.html' },
+          { id: 'overtime',   label: 'Overtime Request', icon: 'fa-clock',        page: 'overtime.html' },
+          { id: 'overtime-history', label: 'Overtime History', icon: 'fa-clock-rotate-left', page: 'overtime-history.html' },
           { id: 'leave',      label: 'On Leave (Sick/Leave)', icon: 'fa-user-injured', page: 'leave.html' }
         ]
       },
