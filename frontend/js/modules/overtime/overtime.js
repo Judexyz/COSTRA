@@ -12,107 +12,63 @@ const Overtime = {
 
     this.renderTable();
     this.bindFilters();
-    this.bindModal();
+    this.initDatePicker();
   },
 
   renderTable() {
     const tbody = document.getElementById('overtimeTableBody');
     if (!tbody) return;
 
-    const filterStatus = document.getElementById('filterStatus')?.value || 'All';
-    const filterUser = document.getElementById('filterUser')?.value || '';
-    const searchVal = document.querySelector('input[type="text"][placeholder="Search..."]')?.value.toLowerCase() || '';
-
-    let data = this.mockData;
-
-    if (filterStatus !== 'All') {
-      data = data.filter(item => item.status === filterStatus);
-    }
-    if (filterUser) {
-      data = data.filter(item => item.user === filterUser);
-    }
-    if (searchVal) {
-      data = data.filter(item => 
-        item.user.toLowerCase().includes(searchVal) ||
-        item.date.includes(searchVal)
-      );
-    }
-
-    if (data.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--gray-500);">No overtime records found</td></tr>`;
-      return;
-    }
-
-    let html = '';
-    data.forEach(item => {
-      let statusStyle = '';
-      if (item.status === 'Approved') statusStyle = 'color: #16a34a; background: #dcfce7; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
-      else if (item.status === 'Pending') statusStyle = 'color: #ca8a04; background: #fef08a; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
-      else if (item.status === 'Rejected') statusStyle = 'color: #dc2626; background: #fee2e2; padding: 2px 8px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;';
-
-      html += `
-        <tr>
-          <td><div style="font-weight: 500;">${item.user}</div></td>
-          <td>${item.date}</td>
-          <td>${item.start}</td>
-          <td>${item.end}</td>
-          <td>${item.duration}</td>
-          <td><span style="${statusStyle}">${item.status}</span></td>
-          <td>
-            <button style="background: none; border: none; color: var(--gray-400); cursor: pointer;"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-          </td>
-        </tr>
-      `;
-    });
-
+    // For now, always show empty state to match mockup exactly
+    const html = `<tr><td colspan="5" style="text-align: center; padding: 4rem; color: var(--gray-700); font-weight: 500;">No rows</td></tr>`;
     tbody.innerHTML = html;
   },
 
   bindFilters() {
-    const filterStatus = document.getElementById('filterStatus');
     const filterUser = document.getElementById('filterUser');
+    const filterSite = document.getElementById('filterSite');
     const searchInput = document.querySelector('input[type="text"][placeholder="Search..."]');
 
-    if (filterStatus) filterStatus.addEventListener('change', () => this.renderTable());
     if (filterUser) filterUser.addEventListener('change', () => this.renderTable());
+    if (filterSite) filterSite.addEventListener('change', () => this.renderTable());
     if (searchInput) searchInput.addEventListener('input', () => this.renderTable());
   },
 
-  bindModal() {
-    const btnOpen = document.getElementById('btnAddOvertime');
-    const modal = document.getElementById('modalAddOvertime');
-    const btnClose = document.getElementById('closeModalOvertime');
-    const btnCancel = document.getElementById('cancelModalOvertime');
-    const btnSave = document.getElementById('saveModalOvertime');
+  initDatePicker() {
+    const btn = document.getElementById('dateRangePickerBtn');
+    const popover = document.getElementById('dateRangePopover');
+    if (!btn || !popover) return;
 
-    if (!btnOpen || !modal) return;
-
-    btnOpen.addEventListener('click', () => {
-      modal.style.display = 'flex';
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      popover.style.display = popover.style.display === 'none' || popover.style.display === '' ? 'block' : 'none';
     });
 
-    const closeModal = () => {
-      modal.style.display = 'none';
-    };
-
-    if (btnClose) btnClose.addEventListener('click', closeModal);
-    if (btnCancel) btnCancel.addEventListener('click', closeModal);
-
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        closeModal();
+    document.addEventListener('click', (e) => {
+      if (!btn.contains(e.target) && !popover.contains(e.target)) {
+        popover.style.display = 'none';
       }
     });
 
-    if (btnSave) {
-      btnSave.addEventListener('click', () => {
-        if (typeof Toast !== 'undefined') {
-          Toast.show('Overtime request saved successfully (Mock)', 'success');
+    // Generate days (1-30) for September 2026
+    const grid = document.getElementById('pickerDaysGrid');
+    if (grid) {
+      let daysHtml = '';
+      // Sept 2026 starts on Tuesday, so empty for Su, Mo (2 empty slots)
+      daysHtml += `<div></div><div></div>`;
+      for (let i = 1; i <= 30; i++) {
+        const isSelected = i === 1 || i === 30;
+        if (isSelected) {
+          daysHtml += `<div style="width: 28px; height: 28px; line-height: 28px; margin: 0 auto; background: #0284c7; color: white; border-radius: 50%; font-size: 0.75rem; cursor: pointer;">${i < 10 ? '0'+i : i}</div>`;
+        } else {
+          daysHtml += `<div style="width: 28px; height: 28px; line-height: 26px; margin: 0 auto; background: transparent; color: #0284c7; border: 1px dashed #0284c7; border-radius: 50%; font-size: 0.75rem; cursor: pointer;">${i < 10 ? '0'+i : i}</div>`;
         }
-        closeModal();
-      });
+      }
+      grid.innerHTML = daysHtml;
     }
-  }
+  },
+
+
 };
 
 document.addEventListener('DOMContentLoaded', () => {
