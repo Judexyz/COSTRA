@@ -59,12 +59,30 @@ const Overtime = {
       for (let i = 1; i <= 30; i++) {
         const isSelected = i === 1 || i === 30;
         if (isSelected) {
-          daysHtml += `<div style="width: 28px; height: 28px; line-height: 28px; margin: 0 auto; background: #0284c7; color: white; border-radius: 50%; font-size: 0.75rem; cursor: pointer;">${i < 10 ? '0'+i : i}</div>`;
+          daysHtml += `<div class="date-cell" data-date="2026-09-${i < 10 ? '0'+i : i}" style="width: 28px; height: 28px; line-height: 28px; margin: 0 auto; background: #0284c7; color: white; border-radius: 50%; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;">${i < 10 ? '0'+i : i}</div>`;
         } else {
-          daysHtml += `<div style="width: 28px; height: 28px; line-height: 26px; margin: 0 auto; background: transparent; color: #0284c7; border: 1px dashed #0284c7; border-radius: 50%; font-size: 0.75rem; cursor: pointer;">${i < 10 ? '0'+i : i}</div>`;
+          daysHtml += `<div class="date-cell" data-date="2026-09-${i < 10 ? '0'+i : i}" style="width: 28px; height: 28px; line-height: 26px; margin: 0 auto; background: transparent; color: #0284c7; border: 1px dashed #0284c7; border-radius: 50%; font-size: 0.75rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#e0f2fe'" onmouseout="this.style.background='transparent'">${i < 10 ? '0'+i : i}</div>`;
         }
       }
       grid.innerHTML = daysHtml;
+
+      // Add click event for dates
+      const dateCells = grid.querySelectorAll('.date-cell');
+      dateCells.forEach(cell => {
+        cell.addEventListener('click', (e) => {
+          const selectedDate = e.target.getAttribute('data-date');
+          const btnText = btn.querySelector('div');
+          
+          // Simple interaction: update text and close popover
+          if (btnText) {
+            btnText.textContent = `2026-09-01 to ${selectedDate}`;
+          }
+          popover.style.display = 'none';
+          
+          // Optionally re-render table
+          this.renderTable();
+        });
+      });
     }
   },
 
