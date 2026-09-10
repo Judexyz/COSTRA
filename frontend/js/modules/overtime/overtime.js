@@ -17,7 +17,7 @@ const Overtime = {
   async loadRequests() {
     try {
       const token = Storage.getToken();
-      const res = await fetch('../backend/api/overtime/list.php', {
+      const res = await fetch(`${BASE_URL}/overtime/list.php`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -87,7 +87,7 @@ const Overtime = {
     if (!confirm(`Are you sure you want to ${status.toLowerCase()} this request?`)) return;
     try {
       const token = Storage.getToken();
-      const res = await fetch('../backend/api/overtime/approve.php', {
+      const res = await fetch(`${BASE_URL}/overtime/approve.php`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ const Overtime = {
 
         try {
           const token = Storage.getToken();
-          const res = await fetch('../backend/api/overtime/create.php', {
+          const res = await fetch(`${BASE_URL}/overtime/create.php`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
