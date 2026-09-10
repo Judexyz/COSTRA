@@ -5,9 +5,17 @@ $db = getDB();
 
 echo "Memulai proses seeder...<br>";
 
-// Tambahkan role HR jika belum ada
+// Tambahkan role HR jika belum ada di tabel roles
 $db->query("INSERT IGNORE INTO roles (name) VALUES ('hr')");
-echo "Role 'hr' dipastikan ada.<br>";
+echo "Role 'hr' dipastikan ada di tabel roles.<br>";
+
+// Modifikasi ENUM pada kolom role di tabel users agar mendukung 'hr'
+$alterQuery = "ALTER TABLE users MODIFY COLUMN role ENUM('super_admin','admin','staff','technician','client','hr') DEFAULT 'staff'";
+if ($db->query($alterQuery)) {
+    echo "Struktur tabel users berhasil diupdate untuk mendukung role HR.<br>";
+} else {
+    echo "Gagal mengupdate struktur tabel users: " . $db->error . "<br>";
+}
 
 // Array user baru
 $users = [
